@@ -195,7 +195,8 @@ body.nogl .fallback{display:block;max-width:min(320px,80%);margin-top:32px}
 .show-grid button{display:block;width:100%;margin:0 0 14px;padding:0;border:0;border-radius:8px;overflow:hidden;position:relative;background:var(--bg-2);break-inside:avoid;cursor:zoom-in;color:#fff;text-align:left;
   opacity:0;transform:translateY(18px) scale(.98);animation:tileIn .5s cubic-bezier(.2,.7,.2,1) forwards}
 @keyframes tileIn{to{opacity:1;transform:none}}
-.show-grid img{width:100%;height:auto;display:block;transition:transform .6s,filter .4s}
+.show-grid img{width:100%;height:auto;display:block;transition:transform .6s,filter .6s ease}
+@media (hover:hover){.show-grid img{filter:grayscale(1) contrast(1.08) brightness(.85)}.show-grid button:hover img,.show-grid button:focus-visible img{filter:none}}
 .show-grid button:hover img{transform:scale(1.04)}
 .show-grid .cap{position:absolute;left:0;right:0;bottom:0;padding:30px 12px 10px;background:linear-gradient(transparent,rgba(0,0,0,.8));font-size:13px;font-weight:600;opacity:0;transition:opacity .3s}
 .show-grid button:hover .cap,.show-grid button:focus-visible .cap{opacity:1}
@@ -248,6 +249,11 @@ body.nogl .fallback{display:block;max-width:min(320px,80%);margin-top:32px}
 .assoc-col li:hover{color:var(--accent);padding-left:8px}
 .assoc-col li.more{font:400 13px/1.4 var(--body);text-transform:none;color:var(--muted);border:0}
 .assoc-col li.more:hover{padding-left:0;color:var(--muted)}
+footer .in{align-items:center;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 84px)}
+.totop{display:inline-flex;align-items:center;gap:8px;font:600 12px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--fg);background:transparent;border:1.5px solid var(--fg);border-radius:999px;padding:10px 16px;cursor:pointer;transition:border-color .2s,color .2s,transform .2s}
+.totop svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;transition:transform .3s}
+.totop:hover{border-color:var(--accent);color:var(--accent)}
+.totop:hover svg{transform:translateY(-3px)}
 /* contact */
 .scene.contact{align-items:flex-end}
 .contact .col{max-width:760px;margin:0 auto;text-align:center}
@@ -272,6 +278,8 @@ footer .in{max-width:1280px;margin:0 auto;padding:22px clamp(16px,4vw,48px);disp
   .chat span{display:none}
   .viewwork span{display:none}
   .assoc-grid{grid-template-columns:minmax(0,1fr)}
+  footer .in{flex-direction:column;text-align:center;gap:16px;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 90px)}
+  footer .totop{order:-1}
   .scene.gallery .assoc{margin-inline:22px}
   .show-head{flex-wrap:nowrap;flex-direction:column;align-items:stretch;gap:10px}
   .show-head>div:first-child{padding-right:56px}
@@ -319,7 +327,7 @@ footer .in{max-width:1280px;margin:0 auto;padding:22px clamp(16px,4vw,48px);disp
     <div class="in"><div class="col">
       <div class="tag">Doha, Qatar &middot; From Kerala</div>
       <h1>Muhammed<span>Sayeed</span></h1>
-      <p class="roles">Videographer<em>/</em>Editor<em>/</em>Sound Engineer<em>/</em>Composer</p>
+      <p class="roles">Videographer<em>/</em>Editor<em>/</em>Sound&nbsp;Engineer<em>/</em>Composer<em>/</em>AI&nbsp;Developer</p>
       <p class="lede">I tell true, human stories with sound and image. From recording studios in Kerala to newsrooms, radio and race days in Qatar, I shoot, edit, mix and score, from the first frame to the final pass.</p>
       <div class="cta">
         <a class="btn" href="#contact">Start a project <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
@@ -419,6 +427,9 @@ footer .in{max-width:1280px;margin:0 auto;padding:22px clamp(16px,4vw,48px);disp
         <article><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M4 20h4l3-9 4 18 4-24 4 26 4-16 3 5h6"/></svg>
           <h3>Sound &amp; Music</h3><p>Recording, mixing, music direction, orchestration and original lyrics.</p>
           <ul class="chips"><li>Pro Tools</li><li>Cubase</li><li>Arrangement</li></ul></article>
+        <article><svg viewBox="0 0 40 40" aria-hidden="true"><rect x="9" y="9" width="22" height="22" rx="3"/><rect x="15" y="15" width="10" height="10" rx="1"/><path d="M15 4v5M20 4v5M25 4v5M15 31v5M20 31v5M25 31v5M4 15h5M4 20h5M4 25h5M31 15h5M31 20h5M31 25h5"/></svg>
+          <h3>AI Development</h3><p>AI-assisted creative workflows, chat assistants and web and mobile apps, like the one on this site.</p>
+          <ul class="chips"><li>AI workflows</li><li>Web apps</li><li>Flutter</li></ul></article>
       </div>
       <h3 class="sub">Also building</h3>
       <ul class="now">
@@ -494,7 +505,7 @@ footer .in{max-width:1280px;margin:0 auto;padding:22px clamp(16px,4vw,48px);disp
   <figure><div class="lb-media" id="lbMedia"></div><figcaption id="lbCap"></figcaption></figure>
   <button class="lb-nav next" id="lbNext" type="button" aria-label="Next">&#8250;</button>
 </div>
-<footer><div class="in"><span>© 2026 Muhammed Sayeed Mudavantheri</span><span>Shot, cut, mixed &amp; scored in Qatar</span></div></footer>
+<footer><div class="in"><span>© 2026 Muhammed Sayeed Mudavantheri</span><button class="totop" id="toTop" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 13V3M4 7l4-4 4 4"/></svg>Back to top</button><span>Shot, cut, mixed &amp; scored in Qatar</span></div></footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
@@ -640,6 +651,8 @@ const WORKS=[
   if(location.hash==='#work-all') openShow();
 })();
 
+document.getElementById('toTop').addEventListener('click',()=>{scrollTo({top:0,behavior:reduce?'auto':'smooth'});setTimeout(()=>document.querySelector('.brand').focus({preventScroll:true}),reduce?0:900)});
+
 /* ---------- chat assistant: answers from Sayeed's own information, hands off to WhatsApp ---------- */
 (function(){
   const WA='https://wa.me/97470031661?text=Hi%20Sayeed%2C%20I%20saw%20your%20portfolio%20and%20would%20like%20to%20talk%20about%20a%20project.';
@@ -659,6 +672,7 @@ const WORKS=[
     {k:['where','location','based','qatar','doha','kerala','from'],a:()=>`Sayeed is based in <b>Doha, Qatar</b>, where he has worked since 2015. He's originally from Mudavantheri in Kerala, India.`},
     {k:['language','speak','malayalam','hindi','english','arabic'],a:()=>`Sayeed works in <b>Malayalam, English and Hindi</b>.`},
     {k:['study','education','degree','college','bsc','qualification'],a:()=>`Sayeed has a <b>BSc in Multimedia &amp; Animation</b> from Farook College, University of Calicut.`},
+    {k:['ai','artificial intelligence','developer','develop','app','apps','website','web','flutter','coding','code','chatbot'],a:()=>`Sayeed is also an <b>AI developer</b>: he builds AI-assisted creative workflows, chat assistants like this one, and web and mobile apps (including Flutter). He's part of the founding team of a Kerala family-travel app.`},
     {k:['software','premiere','after effects','pro tools','cubase','photoshop','tools'],a:()=>`He works in Premiere Pro, After Effects, Photoshop, Pro Tools, Cubase and OBS for live production.`},
     {k:['camera','gear','equipment','drone','lens','kit'],a:()=>`I don't have Sayeed's full kit list. Ask him directly and he'll tell you what fits your shoot: ${wa()}`},
     {k:['thank','thanks','great','nice','awesome'],a:()=>`You're welcome! If you'd like to talk about a project, ${wa('Sayeed is on WhatsApp')}.`},
