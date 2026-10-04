@@ -149,6 +149,58 @@ body.nogl .fallback{display:block;max-width:min(320px,80%);margin-top:32px}
 .disc small{font:400 11px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
 .disc p{margin:6px 0 0;color:var(--muted);font-size:15px}
 .disc b{color:var(--fg);font-weight:700}
+/* gallery */
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}
+.filters button{font:500 12px/1 var(--mono);letter-spacing:.06em;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--muted)}
+.filters button[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.gal{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;perspective:1100px}
+.tile{position:relative;padding:0;border:0;border-radius:8px;overflow:hidden;background:var(--bg-2);aspect-ratio:4/5;transform-style:preserve-3d;transition:transform .35s cubic-bezier(.2,.7,.2,1),box-shadow .35s;box-shadow:0 0 0 1px var(--line);text-align:left;color:#fff}
+.tile.wide{grid-column:span 2;aspect-ratio:16/9}
+.tile img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s}
+.tile:hover{box-shadow:0 30px 60px -25px #000,0 0 0 1px var(--accent)}
+.tile:hover img{transform:scale(1.05)}
+.tile .cap{position:absolute;left:0;right:0;bottom:0;padding:28px 12px 10px;background:linear-gradient(transparent,rgba(0,0,0,.8));font-size:13px;font-weight:600}
+.tile .cap small{display:block;font:400 10px/1.4 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.tile .play{position:absolute;top:50%;left:50%;width:54px;height:54px;margin:-27px 0 0 -27px;border-radius:50%;background:rgba(0,0,0,.55);border:1.5px solid #fff;display:grid;place-items:center}
+.tile .play::after{content:"";border-left:14px solid #fff;border-top:9px solid transparent;border-bottom:9px solid transparent;margin-left:4px}
+.tile[hidden]{display:none}
+.lb{position:fixed;inset:0;z-index:200;background:rgba(5,6,9,.94);display:flex;align-items:center;justify-content:center;gap:8px;padding:calc(env(safe-area-inset-top,0px) + 56px) 12px calc(env(safe-area-inset-bottom,0px) + 24px)}
+.lb[hidden]{display:none}
+.lb figure{margin:0;max-width:min(1100px,100%);flex:1;display:flex;flex-direction:column;align-items:center;gap:12px;min-width:0}
+.lb-media{width:100%;display:flex;justify-content:center}
+.lb-media img{max-width:100%;max-height:76vh;border-radius:6px;object-fit:contain}
+.lb-media iframe{width:100%;aspect-ratio:16/9;border:0;border-radius:6px;background:#000}
+.lb figcaption{font-size:14px;color:var(--muted);text-align:center}
+.lb figcaption b{color:var(--fg);display:block;font-size:16px}
+.lb-x{position:absolute;top:calc(env(safe-area-inset-top,0px) + 10px);right:14px;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--fg);font-size:26px;line-height:1}
+.lb-nav{flex:none;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--fg);font-size:28px;line-height:1}
+.lb-nav:hover,.lb-x:hover{border-color:var(--accent);color:var(--accent)}
+/* chat button */
+.chat{position:fixed;right:clamp(14px,2vw,28px);bottom:calc(env(safe-area-inset-bottom,0px) + 18px);z-index:30;display:flex;align-items:center;gap:10px;padding:12px 18px 12px 14px;border-radius:999px;background:var(--accent);color:#1a1006;font-weight:700;font-size:14px;text-decoration:none;box-shadow:0 14px 30px -10px rgba(0,0,0,.7);transition:transform .2s}
+.chat:hover{transform:translateY(-3px)}
+.chat svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linejoin:round}
+.chat::before{content:"";position:absolute;top:6px;right:8px;width:8px;height:8px;border-radius:50%;background:#2ecc71;box-shadow:0 0 0 2px var(--accent)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.bot{position:fixed;right:clamp(14px,2vw,28px);bottom:calc(env(safe-area-inset-bottom,0px) + 84px);z-index:40;width:min(370px,calc(100vw - 28px));height:min(560px,calc(100vh - 130px));display:flex;flex-direction:column;background:var(--bg-2);border:1px solid var(--line);border-radius:16px;box-shadow:0 30px 70px -20px rgba(0,0,0,.85);overflow:hidden}
+.bot[hidden]{display:none}
+.bot-head{display:flex;align-items:center;gap:12px;padding:14px 14px 12px 16px;border-bottom:1px solid var(--line)}
+.bot-head strong{display:block;font-size:15px}
+.bot-head small{color:var(--muted);font-size:12px}
+.bot-av{display:grid;place-items:center;flex:none;width:36px;height:36px;border-radius:50%;background:var(--accent);color:#1a1006;font:800 13px/1 var(--display)}
+.bot-x{margin-left:auto;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--fg);font-size:22px;line-height:1}
+.bot-log{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;min-height:0}
+.msg{max-width:86%;padding:10px 13px;border-radius:14px;font-size:14px;line-height:1.5;overflow-wrap:anywhere}
+.msg.me{align-self:flex-end;background:var(--accent);color:#1a1006;border-bottom-right-radius:4px}
+.msg.him{align-self:flex-start;background:var(--bg);border:1px solid var(--line);border-bottom-left-radius:4px}
+.msg a{color:var(--accent);font-weight:700}
+.msg.typing{color:var(--muted);letter-spacing:.2em}
+.bot-chips{display:flex;gap:6px;overflow-x:auto;padding:0 12px 10px;scrollbar-width:none}
+.bot-chips button{flex:none;font:500 12px/1 var(--body);padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--fg)}
+.bot-chips button:hover{border-color:var(--accent);color:var(--accent)}
+.bot-form{display:flex;gap:8px;padding:10px 12px 12px;border-top:1px solid var(--line)}
+.bot-form input{flex:1;min-width:0;background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:10px 14px;color:var(--fg);font:16px var(--body)}
+.bot-form input:focus{outline:none;border-color:var(--accent)}
+.bot-form button{width:42px;height:42px;border-radius:50%;border:0;background:var(--accent);color:#1a1006;font-size:16px}
 /* contact */
 .scene.contact{align-items:flex-end}
 .contact .col{max-width:760px;margin:0 auto;text-align:center}
@@ -170,6 +222,8 @@ footer .in{max-width:1280px;margin:0 auto;padding:22px clamp(16px,4vw,48px);disp
   .hero{align-items:flex-start}
   .hero .in{padding-bottom:58vh}
   .tally,.rail{display:none}
+  .chat span{display:none}
+  .chat{padding:14px}
   .facts{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:14px}
   .cut{grid-template-columns:minmax(0,1fr)}
   .cut p{grid-column:1}
@@ -195,7 +249,7 @@ footer .in{max-width:1280px;margin:0 auto;padding:22px clamp(16px,4vw,48px);disp
 </div></header>
 
 <nav aria-label="Scenes"><ul class="rail" id="rail">
-  <li><a href="#hero">Intro</a></li><li><a href="#about">About</a></li><li><a href="#work">Experience</a></li>
+  <li><a href="#hero">Intro</a></li><li><a href="#about">About</a></li><li><a href="#work">Experience</a></li><li><a href="#gallery">Work</a></li>
   <li><a href="#services">Services</a></li><li><a href="#music">Music</a></li><li><a href="#contact">Contact</a></li>
 </ul></nav>
 
@@ -257,9 +311,19 @@ footer .in{max-width:1280px;margin:0 auto;padding:22px clamp(16px,4vw,48px);disp
     </div></div>
   </section>
 
-  <section class="scene" id="services" data-scene="3">
+  <section class="scene" id="gallery" data-scene="3">
     <div class="in"><div class="col">
-      <div class="tag">Scene 03 &middot; Services</div>
+      <div class="tag">Scene 03 &middot; Selected work</div>
+      <h2>Work samples</h2>
+      <div class="filters" id="filters" role="group" aria-label="Filter work"></div>
+      <div class="gal" id="gal"></div>
+      <p class="hint" style="margin-top:20px">Tap any frame to view it full screen</p>
+    </div></div>
+  </section>
+
+  <section class="scene" id="services" data-scene="4">
+    <div class="in"><div class="col">
+      <div class="tag">Scene 04 &middot; Services</div>
       <h2>What I deliver</h2>
       <div class="svc">
         <article><svg viewBox="0 0 40 40" aria-hidden="true"><rect x="4" y="11" width="24" height="18" rx="3"/><path d="M28 17l8-5v16l-8-5z"/><circle cx="12" cy="20" r="3"/></svg>
@@ -285,9 +349,9 @@ footer .in{max-width:1280px;margin:0 auto;padding:22px clamp(16px,4vw,48px);disp
     </div></div>
   </section>
 
-  <section class="scene" id="music" data-scene="4">
+  <section class="scene" id="music" data-scene="5">
     <div class="in"><div class="col">
-      <div class="tag">Scene 04 &middot; The musician</div>
+      <div class="tag">Scene 05 &middot; The musician</div>
       <h2>I hear the edit</h2>
       <div class="photos">
         <img class="p1" src="piano-portrait.jpg" alt="Sayeed smiling while seated at a grand piano">
@@ -309,7 +373,7 @@ footer .in{max-width:1280px;margin:0 auto;padding:22px clamp(16px,4vw,48px);disp
     </div></div>
   </section>
 
-  <section class="scene contact" id="contact" data-scene="5">
+  <section class="scene contact" id="contact" data-scene="6">
     <div class="in"><div class="col">
       <div class="tag" style="justify-content:center">Final scene &middot; Contact</div>
       <div class="name-slot" id="nameSlot" aria-hidden="true"></div>
@@ -319,9 +383,27 @@ footer .in{max-width:1280px;margin:0 auto;padding:22px clamp(16px,4vw,48px);disp
         <div class="line"><div><small>Email</small><span class="v" id="em">muhammedsayeed@gmail.com</span></div><button class="copy" data-t="em" type="button">Copy</button></div>
         <div class="line"><div><small>Phone / WhatsApp</small><span class="v" id="ph">+974 7003 1661</span></div><button class="copy" data-t="ph" type="button">Copy</button></div>
       </div>
+      <div class="cta" style="justify-content:center;margin-top:18px"><a class="btn" href="https://wa.me/97470031661?text=Hi%20Sayeed%2C%20I%20saw%20your%20portfolio%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener">Chat on WhatsApp <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
+      </div>
     </div></div>
   </section>
 </main>
+<button class="chat" id="chat" type="button" aria-controls="bot" aria-expanded="false">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 10h8M8 13h5"/></svg><span>Chat with me</span></button>
+<div class="bot" id="bot" hidden role="dialog" aria-label="Chat about Sayeed">
+  <div class="bot-head"><b class="bot-av">MS</b><div><strong>Ask about Sayeed</strong><small>Instant answers &middot; the real Sayeed is on WhatsApp</small></div>
+    <button class="bot-x" id="botX" type="button" aria-label="Close chat">&times;</button></div>
+  <div class="bot-log" id="botLog" aria-live="polite"></div>
+  <div class="bot-chips" id="botChips"></div>
+  <form class="bot-form" id="botForm" autocomplete="off"><label class="sr" for="botIn">Your question</label>
+    <input id="botIn" type="text" placeholder="Ask a question…" maxlength="200"><button type="submit" aria-label="Send">&#10148;</button></form>
+</div>
+<div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-label="Work viewer">
+  <button class="lb-x" id="lbX" type="button" aria-label="Close">&times;</button>
+  <button class="lb-nav prev" id="lbPrev" type="button" aria-label="Previous">&#8249;</button>
+  <figure><div class="lb-media" id="lbMedia"></div><figcaption id="lbCap"></figcaption></figure>
+  <button class="lb-nav next" id="lbNext" type="button" aria-label="Next">&#8250;</button>
+</div>
 <footer><div class="in"><span>© 2026 Muhammed Sayeed Mudavantheri</span><span>Shot, cut, mixed &amp; scored in Qatar</span></div></footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -354,6 +436,93 @@ if(fine&&!reduce){
     requestAnimationFrame(loop)})();
 }
 
+/* ---------- work gallery ----------
+   Add work here. Photo: {type:'photo', src:'file.jpg', title, cat}
+   Video: {type:'video', youtube:'VIDEO_ID', thumb:'file.jpg' (optional), title, cat}
+   wide:true makes a tile span both columns. */
+const WORKS=[
+  {type:'photo',src:'cutout.webp',title:'Studio portrait session',cat:'Behind the scenes',fit:'contain'},
+  {type:'photo',src:'piano-portrait.jpg',title:'At the piano',cat:'Music'},
+  {type:'photo',src:'piano-keys.jpg',title:'Recording session',cat:'Music',wide:true},
+];
+(function(){
+  const gal=document.getElementById('gal'), fl=document.getElementById('filters');
+  const lb=document.getElementById('lb'), media=document.getElementById('lbMedia'), cap=document.getElementById('lbCap');
+  const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const thumb=w=>w.type==='video'?(w.thumb||`https://i.ytimg.com/vi/${w.youtube}/hqdefault.jpg`):w.src;
+  const tiles=WORKS.map((w,i)=>{const b=document.createElement('button');b.type='button';b.className='tile'+(w.wide?' wide':'');
+    b.innerHTML=`<img src="${esc(thumb(w))}" alt="${esc(w.title)}" loading="lazy"${w.fit?` style="object-fit:${esc(w.fit)};padding:10px 6px 0"`:''}>${w.type==='video'?'<span class="play" aria-hidden="true"></span>':''}<span class="cap"><small>${esc(w.cat)}</small>${esc(w.title)}</span>`;
+    b.addEventListener('click',()=>open(i));
+    if(matchMedia('(pointer:fine)').matches&&!reduce){
+      b.addEventListener('mousemove',e=>{const r=b.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;b.style.transform=`rotateY(${x*10}deg) rotateX(${-y*10}deg)`});
+      b.addEventListener('mouseleave',()=>b.style.transform='');}
+    gal.appendChild(b);return b});
+  const cats=['All',...new Set(WORKS.map(w=>w.cat))];
+  if(cats.length>2) cats.forEach((c,k)=>{const b=document.createElement('button');b.type='button';b.textContent=c;b.setAttribute('aria-pressed',k===0?'true':'false');
+    b.addEventListener('click',()=>{fl.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed','false'));b.setAttribute('aria-pressed','true');
+      WORKS.forEach((w,i)=>tiles[i].hidden=!(c==='All'||w.cat===c))});fl.appendChild(b)});
+  let cur=0,lastFocus=null;
+  function show(i){cur=(i+WORKS.length)%WORKS.length;const w=WORKS[cur];
+    media.innerHTML=w.type==='video'
+      ?`<iframe src="https://www.youtube-nocookie.com/embed/${esc(w.youtube)}?autoplay=1&rel=0" title="${esc(w.title)}" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>`
+      :`<img src="${esc(w.src)}" alt="${esc(w.title)}">`;
+    cap.innerHTML=`<b>${esc(w.title)}</b>${esc(w.cat)}${w.type==='video'?` &middot; <a href="https://youtu.be/${esc(w.youtube)}" target="_blank" rel="noopener">Open on YouTube</a>`:''}`;}
+  function open(i){lastFocus=document.activeElement;show(i);lb.hidden=false;document.body.style.overflow='hidden';document.getElementById('lbX').focus()}
+  function close(){lb.hidden=true;media.innerHTML='';document.body.style.overflow='';if(lastFocus)lastFocus.focus()}
+  document.getElementById('lbX').addEventListener('click',close);
+  document.getElementById('lbPrev').addEventListener('click',()=>show(cur-1));
+  document.getElementById('lbNext').addEventListener('click',()=>show(cur+1));
+  lb.addEventListener('click',e=>{if(e.target===lb)close()});
+  addEventListener('keydown',e=>{if(lb.hidden)return;if(e.key==='Escape')close();else if(e.key==='ArrowLeft')show(cur-1);else if(e.key==='ArrowRight')show(cur+1)});
+  let sx=null;lb.addEventListener('touchstart',e=>{sx=e.touches[0].clientX},{passive:true});
+  lb.addEventListener('touchend',e=>{if(sx===null)return;const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>50)show(cur+(dx<0?1:-1));sx=null});
+})();
+
+/* ---------- chat assistant: answers from Sayeed's own information, hands off to WhatsApp ---------- */
+(function(){
+  const WA='https://wa.me/97470031661?text=Hi%20Sayeed%2C%20I%20saw%20your%20portfolio%20and%20would%20like%20to%20talk%20about%20a%20project.';
+  const wa=t=>`<a href="${WA}" target="_blank" rel="noopener">${t||'Message Sayeed on WhatsApp'}</a>`;
+  const A=[
+    {k:['hi','hello','hey','salam','assalam','good morning','good evening'],a:()=>`Hi! I can tell you about Sayeed's work, experience, music and how to hire him. What would you like to know?`},
+    {k:['service','offer','do you do','what do','skills','work on','help with'],a:()=>`Sayeed shoots, edits and mixes: <b>videography and photography</b> (sport, equestrian, documentary, brand), <b>editing and motion graphics</b> (news, broadcast, social), and <b>sound and music</b> (recording, mixing, music direction, arrangement, lyrics).`},
+    {k:['price','pricing','rate','cost','charge','quote','budget','fee','how much'],a:()=>`Pricing depends on the project: shoot days, crew, editing and music. Send Sayeed a short brief and he'll reply with a quote. ${wa('Send a brief on WhatsApp')}`},
+    {k:['hire','book','available','availability','freelance','project','collab','work with'],a:()=>`Yes, Sayeed is open to projects, including select freelance work. The fastest way is WhatsApp: ${wa()}. Or email muhammedsayeed@gmail.com.`},
+    {k:['contact','email','phone','number','whatsapp','reach','call'],a:()=>`WhatsApp or call <b>+974 7003 1661</b>, or email <b>muhammedsayeed@gmail.com</b>. ${wa('Open WhatsApp')}`},
+    {k:['current','now','job','wathnan','horse','equestrian','racing','hathab'],a:()=>`Since 2024 Sayeed has been <b>Videographer &amp; Multimedia Editor at Wathnan Stud</b>, filming horse racing, heritage horses and Hathab show jumping.`},
+    {k:['experience','career','worked','background','history','radio','suno','olive','24 news','news'],a:()=>`Sayeed has worked in the industry since 2011: sound engineer at Fx Media, Axen Recording Studio and R-Media Qatar; Junior Sound Engineer to <b>Digital Media Head</b> at Olive Suno Radio Network; Qatar Regional Video Editor at <b>24 News</b>; and now Wathnan Stud. Scroll to the Cut list for details.`},
+    {k:['music','song','sing','lyric','compose','piano','record','mappila'],a:()=>`Sayeed is a musician, singer and lyricist. He has recorded 500+ songs, music-directed 100+, done 250+ arrangements and written 30+ original lyrics, including work on Thaqdeer, Pranayikkaruthe Aarum, Allah Allah and Puzhakkara.`},
+    {k:['photo','al noor','alnoor','photography'],a:()=>`In 2024 Sayeed co-founded <b>Al Noor Photography</b>, covering sports, documentary and brand stories.`},
+    {k:['world cup','fifa','messi','ronaldo','neymar'],a:()=>`Sayeed volunteered at the <b>FIFA World Cup Qatar 2022</b>, working on event operations at global scale, and met Messi, Ronaldo and Neymar along the way.`},
+    {k:['where','location','based','qatar','doha','kerala','from'],a:()=>`Sayeed is based in <b>Doha, Qatar</b>, where he has worked since 2015. He's originally from Mudavantheri in Kerala, India.`},
+    {k:['language','speak','malayalam','hindi','english','arabic'],a:()=>`Sayeed works in <b>Malayalam, English and Hindi</b>.`},
+    {k:['study','education','degree','college','bsc','qualification'],a:()=>`Sayeed has a <b>BSc in Multimedia &amp; Animation</b> from Farook College, University of Calicut.`},
+    {k:['software','premiere','after effects','pro tools','cubase','photoshop','tools'],a:()=>`He works in Premiere Pro, After Effects, Photoshop, Pro Tools, Cubase and OBS for live production.`},
+    {k:['camera','gear','equipment','drone','lens','kit'],a:()=>`I don't have Sayeed's full kit list. Ask him directly and he'll tell you what fits your shoot: ${wa()}`},
+    {k:['thank','thanks','great','nice','awesome'],a:()=>`You're welcome! If you'd like to talk about a project, ${wa('Sayeed is on WhatsApp')}.`},
+  ];
+  const FALLBACK=()=>`I'm not sure about that one. Sayeed can answer it himself: ${wa()}`;
+  const CHIPS=['What do you offer?','Current work','Music','Pricing','Hire Sayeed','Contact'];
+  const btn=document.getElementById('chat'), box=document.getElementById('bot'), log=document.getElementById('botLog'),
+        chips=document.getElementById('botChips'), form=document.getElementById('botForm'), inp=document.getElementById('botIn');
+  let started=false;
+  function add(html,who){const d=document.createElement('div');d.className='msg '+who;d.innerHTML=html;log.appendChild(d);log.scrollTop=log.scrollHeight;return d}
+  const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  function answer(q){const t=' '+q.toLowerCase()+' ';
+    let best=null,score=0; A.forEach(x=>{const s=x.k.reduce((n,k)=>n+(new RegExp('\\b'+k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+(k.length<=3?'\\b':'')).test(t)?k.length:0),0); if(s>score){score=s;best=x}});
+    return best?best.a():FALLBACK();}
+  function ask(q){q=q.trim(); if(!q) return; add(esc(q),'me'); const ty=add('•••','him typing');
+    setTimeout(()=>{ty.remove();add(answer(q),'him')},reduce?0:550);}
+  CHIPS.forEach(c=>{const b=document.createElement('button');b.type='button';b.textContent=c;b.addEventListener('click',()=>ask(c));chips.appendChild(b)});
+  function open(){box.hidden=false;btn.setAttribute('aria-expanded','true');
+    if(!started){started=true;add(`Hi, I'm Sayeed's portfolio assistant. Ask me about his work, experience, music or how to hire him.`,'him')}
+    setTimeout(()=>inp.focus(),50)}
+  function close(){box.hidden=true;btn.setAttribute('aria-expanded','false');btn.focus()}
+  btn.addEventListener('click',()=>box.hidden?open():close());
+  document.getElementById('botX').addEventListener('click',close);
+  form.addEventListener('submit',e=>{e.preventDefault();ask(inp.value);inp.value=''});
+  addEventListener('keydown',e=>{if(e.key==='Escape'&&!box.hidden)close()});
+})();
+
 /* ---------- piano (HTML + Web Audio) ---------- */
 const keyHit=new Float32Array(13);
 (function(){
@@ -383,7 +552,7 @@ const keyHit=new Float32Array(13);
   }
   el.addEventListener('pointerdown',e=>{const b=e.target.closest('button');if(!b)return;e.preventDefault();play(+b.dataset.i)});
   el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){const b=e.target.closest('button');if(b){e.preventDefault();play(+b.dataset.i)}}});
-  addEventListener('keydown',e=>{ if(e.repeat||e.metaKey||e.ctrlKey||e.altKey) return; if(/input|textarea/i.test(e.target.tagName)) return;
+  addEventListener('keydown',e=>{ if(e.repeat||e.metaKey||e.ctrlKey||e.altKey) return; if(/input|textarea/i.test(e.target.tagName)) return; if(!document.getElementById('lb').hidden) return;
     const i=kb.indexOf(e.key.toLowerCase()); if(i<0) return;
     const m=document.getElementById('music').getBoundingClientRect(); if(m.bottom<0||m.top>innerHeight) return;
     play(i); });
@@ -465,7 +634,19 @@ Promise.all([loadPts,fontReady]).then(([txt])=>{
     else C.set([.82,.78,.72],k*3);}
    shapes.push(P);cols.push(C);}
 
-  /* 3 · sound: ridgeline waveform landscape */
+  /* 3 · gallery: a curved wall of six frames */
+  {const [P,C]=mk(); const fw=2.3, fh=1.55, gap=.35;
+   const tint=[[.95,.62,.28],[.45,.68,1],[.9,.45,.42],[.55,.85,.7],[.98,.8,.45],[.6,.55,.95]];
+   for(let k=0;k<N;k++){const fi=(R()*6)|0, cx=(fi%3-1)*(fw+gap), cy=(fi<3?.5:-.5)*(fh+gap);
+    let u=R()*2-1,v=R()*2-1; const border=R()<.42;
+    if(border){ if(R()<.5)u=Math.sign(u)*(.94+R()*.06); else v=Math.sign(v)*(.94+R()*.06); }
+    const x=cx+u*fw/2, y=cy+v*fh/2, z=-x*x*.09+(border?.05:0);
+    P[k*3]=x;P[k*3+1]=y;P[k*3+2]=z;
+    if(border) C.set([.92,.88,.82],k*3);
+    else {const t=tint[fi], g=.3+.45*(v*.5+.5)+.2*R(); C.set([t[0]*g,t[1]*g,t[2]*g],k*3);}}
+   shapes.push(P);cols.push(C);}
+
+  /* 4 · sound: ridgeline waveform landscape */
   {const [P,C]=mk(); const lines=56;
    for(let k=0;k<N;k++){const li=(R()*lines)|0, zz=(li/(lines-1)-.5)*6, x=(R()*2-1)*3.8;
     const env=Math.exp(-x*x/2.2), n=Math.sin(x*3.1+li*.7)*.5+Math.sin(x*7.3+li*1.9)*.25+Math.sin(x*1.3-li*.4)*.6;
@@ -475,7 +656,7 @@ Promise.all([loadPts,fontReady]).then(([txt])=>{
     const h=Math.min(1,y/2.2); C.set([.35+.62*h,.55+.15*h,.95-.7*h],k*3);}
    shapes.push(P);cols.push(C);}
 
-  /* 4 · piano keyboard, one octave C4–C5, mapped to the HTML keys */
+  /* 5 · piano keyboard, one octave C4–C5, mapped to the HTML keys */
   const KEY=new Float32Array(N).fill(-1);
   {const [P,C]=mk(); const wx=[0,2,4,5,7,9,11,12], kw=.86, total=8*kw;
    const blacks=[[1,0],[3,1],[6,3],[8,4],[10,5]];
@@ -492,7 +673,7 @@ Promise.all([loadPts,fontReady]).then(([txt])=>{
     P[k*3]=x;P[k*3+1]=ty;P[k*3+2]=tz;C.set(col,k*3);KEY[k]=key;}
    shapes.push(P);cols.push(C);}
 
-  /* 5 · name, sampled from type */
+  /* 6 · name, sampled from type */
   {const [P,C]=mk(); const cv=document.createElement('canvas'); cv.width=1200; cv.height=300; const x2=cv.getContext('2d');
    x2.fillStyle='#fff'; x2.font='900 250px "Big Shoulders Display", Impact, "Arial Narrow", sans-serif'; x2.textAlign='center'; x2.textBaseline='middle';
    x2.fillText('SAYEED',600,160);
@@ -554,12 +735,12 @@ Promise.all([loadPts,fontReady]).then(([txt])=>{
   group.add(new THREE.Points(g,mat));
 
   /* layout per scene: [x as share of visible width, y, scale, dim] for wide and narrow screens */
-  const WIDE=[[.24,0,1,1],[.24,0,1,1],[.24,0,1,1],[.24,-.2,1,1],[.24,-.4,1,1],[0,0,.8,1]];
-  const NARROW=[[0,-3.3,.5,1],[0,0,.72,.5],[0,0,.72,.5],[0,0,.85,.5],[0,0,.7,.55],[0,0,.42,1]];
+  const WIDE=[[.24,0,1,1],[.24,0,1,1],[.24,0,1,1],[.25,0,.85,1],[.24,-.2,1,1],[.24,-.4,1,1],[0,0,.8,1]];
+  const NARROW=[[0,-3.3,.5,1],[0,0,.72,.5],[0,0,.72,.5],[0,0,.6,.45],[0,0,.85,.5],[0,0,.7,.55],[0,0,.42,1]];
   let curI=-1;
   function setPair(i){ curI=i; aFrom.copyArray(shapes[i]); aTo.copyArray(shapes[i+1]); cFrom.copyArray(cols[i]); cTo.copyArray(cols[i+1]);
     aFrom.needsUpdate=aTo.needsUpdate=cFrom.needsUpdate=cTo.needsUpdate=true;
-    U.uWaveF.value=i===3?1:0;U.uWaveT.value=i+1===3?1:0;U.uKeysF.value=i===4?1:0;U.uKeysT.value=i+1===4?1:0; }
+    U.uWaveF.value=i===4?1:0;U.uWaveT.value=i+1===4?1:0;U.uKeysF.value=i===5?1:0;U.uKeysT.value=i+1===5?1:0; }
 
   let W=1,H=1,narrow=false;
   function size(){W=innerWidth;H=innerHeight;renderer.setSize(W,H,false);cam.aspect=W/H;cam.updateProjectionMatrix();narrow=W/H<1||W<900}
@@ -570,7 +751,7 @@ Promise.all([loadPts,fontReady]).then(([txt])=>{
   let mx=0,my=0,has=false,force=0,burstT=-9;
   addEventListener('pointermove',e=>{ndc.set(e.clientX/W*2-1,-(e.clientY/H)*2+1);mx=ndc.x;my=ndc.y;has=true},{passive:true});
   document.addEventListener('pointerleave',()=>has=false);
-  addEventListener('click',e=>{ if(reduce||e.target.closest('a,button,.piano,.line,img')) return; burstT=performance.now()/1000; });
+  addEventListener('click',e=>{ if(reduce||e.target.closest('a,button,.piano,.line,img,.gal,.lb,.bot,input')) return; burstT=performance.now()/1000; });
 
   let pS=sceneProgress(), ry=0,rx=0, lay=[0,0,1,1];
   const introStart=performance.now()/1000+.2;
@@ -583,8 +764,8 @@ Promise.all([loadPts,fontReady]).then(([txt])=>{
     const L=narrow?NARROW:WIDE, A=L[i], B=L[i+1], visW=2*19*Math.tan(17*Math.PI/180)*cam.aspect;
     const slot=document.getElementById('nameSlot').getBoundingClientRect(), visH=2*19*Math.tan(17*Math.PI/180);
     const slotY=(.5-(slot.top+slot.height/2)/H)*visH;
-    for(let j=0;j<4;j++){let a=A[j],b=B[j]; if(j===1){ if(i===5)a=slotY; if(i+1===5)b=slotY; }
-      const target=a+(b-a)*f; lay[j]+=(target-lay[j])*(reduce||(j===1&&i+1===5&&f>.9)?1:.1)}
+    for(let j=0;j<4;j++){let a=A[j],b=B[j]; if(j===1){ if(i===6)a=slotY; if(i+1===6)b=slotY; }
+      const target=a+(b-a)*f; lay[j]+=(target-lay[j])*(reduce||(j===1&&i+1===6&&f>.9)?1:.1)}
     group.position.set(lay[0]*visW,lay[1],0); group.scale.setScalar(lay[2]); U.uDim.value=lay[3];
     const sway=reduce?0:Math.sin(t*.35)*.1;
     ry+=((reduce?0:mx*.5)+sway-ry)*.06; rx+=((reduce?0:-my*.2)-rx)*.06;
