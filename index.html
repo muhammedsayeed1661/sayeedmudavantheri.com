@@ -79,7 +79,7 @@ h1{font-weight:900;line-height:.84;font-size:clamp(64px,9vw,150px);letter-spacin
 h1 span{display:block;color:var(--accent)}
 h2{font-weight:800;line-height:.9;font-size:clamp(46px,6vw,88px);text-wrap:balance;margin-bottom:24px}
 .roles{font-size:clamp(17px,1.7vw,20px);font-weight:600;margin:22px 0 12px}
-.roles em{font-style:normal;color:var(--line);margin:0 .45em}
+.roles em{font-style:normal;color:var(--line);margin:0 .15em}
 .lede{color:var(--muted);font-size:17px;max-width:46ch;margin:0 0 30px}
 p{margin:0 0 1em}
 .muted{color:var(--muted)}
@@ -254,6 +254,32 @@ footer .in{align-items:center;padding-bottom:calc(env(safe-area-inset-bottom,0px
 .totop svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;transition:transform .3s}
 .totop:hover{border-color:var(--accent);color:var(--accent)}
 .totop:hover svg{transform:translateY(-3px)}
+.slate{position:relative;max-width:760px;margin:34px auto 0;padding-top:34px;text-align:left}
+.slate-stick{position:absolute;left:0;right:0;top:0;height:30px;border-radius:6px 6px 0 0;transform-origin:10px 100%;transform:rotate(-11deg);
+  background:repeating-linear-gradient(-55deg,#f3efe7 0 26px,#111 26px 52px);box-shadow:0 8px 18px -10px #000;transition:transform .18s cubic-bezier(.6,0,.4,1)}
+.slate-stick::after{content:"";position:absolute;left:4px;bottom:-7px;width:12px;height:12px;border-radius:50%;background:#bfb9ad;box-shadow:inset 0 0 0 3px #555}
+.slate.clap .slate-stick{transform:rotate(0)}
+.slate-board{background:#15171c;border:2px solid #2f333d;border-radius:4px 4px 12px 12px;overflow:hidden;
+  background-image:repeating-linear-gradient(-55deg,#f3efe7 0 26px,#111 26px 52px);background-size:100% 14px;background-repeat:no-repeat}
+.slate-top{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin-top:14px;border-bottom:1.5px solid rgba(243,239,231,.55)}
+.slate-top span{padding:10px 14px;font:500 10px/1.2 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:#a9a39a;border-right:1.5px solid rgba(243,239,231,.55);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.slate-top span:last-child{border-right:0}
+.slate-top b{color:#f3efe7;font-weight:500}
+.slate-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+.slate-grid a{position:relative;display:flex;flex-direction:column;gap:6px;min-width:0;padding:18px 44px 18px 18px;text-decoration:none;color:#f3efe7;
+  border-right:1.5px solid rgba(243,239,231,.3);border-bottom:1.5px solid rgba(243,239,231,.3);transition:background .25s}
+.slate-grid a:nth-child(2n){border-right:0}
+.slate-grid a:nth-last-child(-n+2){border-bottom:0}
+.slate-grid small{font:500 10px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--rec)}
+.slate-grid span{font:800 clamp(26px,3.4vw,40px)/.95 var(--display);text-transform:uppercase;font-style:normal;letter-spacing:.01em}
+.slate-grid em{font:400 12px/1.3 var(--mono);font-style:normal;color:#a9a39a;overflow-wrap:anywhere}
+.slate-grid svg{position:absolute;top:18px;right:16px;width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;transition:transform .25s}
+.slate-grid a:hover,.slate-grid a:focus-visible{background:rgba(242,165,65,.1)}
+.slate-grid a:hover span,.slate-grid a:hover svg,.slate-grid a:focus-visible span{color:var(--accent)}
+.slate-grid a:hover svg{transform:translate(3px,-3px)}
+.foot-soc{display:flex;gap:16px;flex-wrap:wrap}
+.foot-soc a{text-decoration:none;color:var(--muted)}
+.foot-soc a:hover{color:var(--accent)}
 /* contact */
 .scene.contact{align-items:flex-end}
 .contact .col{max-width:760px;margin:0 auto;text-align:center}
@@ -278,6 +304,12 @@ footer .in{max-width:1280px;margin:0 auto;padding:22px clamp(16px,4vw,48px);disp
   .chat span{display:none}
   .viewwork span{display:none}
   .assoc-grid{grid-template-columns:minmax(0,1fr)}
+  .slate-grid a{padding:14px 34px 14px 14px}
+  .slate-grid span{font-size:24px;overflow-wrap:anywhere}
+  .slate-grid small{letter-spacing:.08em}
+  .slate-grid svg{right:10px;top:14px}
+  .slate-top span{padding:9px 8px;letter-spacing:.08em}
+  .foot-soc{justify-content:center}
   footer .in{flex-direction:column;text-align:center;gap:16px;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 90px)}
   footer .totop{order:-1}
   .scene.gallery .assoc{margin-inline:22px}
@@ -327,7 +359,7 @@ footer .in{max-width:1280px;margin:0 auto;padding:22px clamp(16px,4vw,48px);disp
     <div class="in"><div class="col">
       <div class="tag">Doha, Qatar &middot; From Kerala</div>
       <h1>Muhammed<span>Sayeed</span></h1>
-      <p class="roles">Videographer<em>/</em>Editor<em>/</em>Sound&nbsp;Engineer<em>/</em>Composer<em>/</em>AI&nbsp;Developer</p>
+      <p class="roles">Videographer <em>/</em> Editor <em>/</em> Sound&nbsp;Engineer <em>/</em> Composer <em>/</em> AI&nbsp;Developer</p>
       <p class="lede">I tell true, human stories with sound and image. From recording studios in Kerala to newsrooms, radio and race days in Qatar, I shoot, edit, mix and score, from the first frame to the final pass.</p>
       <div class="cta">
         <a class="btn" href="#contact">Start a project <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
@@ -480,6 +512,13 @@ footer .in{max-width:1280px;margin:0 auto;padding:22px clamp(16px,4vw,48px);disp
       </div>
       <div class="cta" style="justify-content:center;margin-top:18px"><a class="btn" href="https://wa.me/97470031661?text=Hi%20Sayeed%2C%20I%20saw%20your%20portfolio%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener">Chat on WhatsApp <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
       </div>
+      <div class="slate" id="slate">
+        <div class="slate-stick" aria-hidden="true"></div>
+        <div class="slate-board">
+          <div class="slate-top" aria-hidden="true"><span>Prod. <b>Sayeed</b></span><span>Scene <b>Social</b></span><span>Date <b id="slateDate">--</b></span></div>
+          <nav class="slate-grid" aria-label="Social media"><a href="https://www.instagram.com/sayeed_mdv/" target="_blank" rel="noopener me"><small>Take 01 &middot; Roll A</small><span>Instagram</span><em>@sayeed_mdv</em><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11L11 5M6 5h5v5"/></svg></a><a href="https://qa.linkedin.com/in/sayeed-mudavantheri-5b550228" target="_blank" rel="noopener me"><small>Take 02 &middot; Roll B</small><span>LinkedIn</span><em>sayeed-mudavantheri</em><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11L11 5M6 5h5v5"/></svg></a><a href="https://www.facebook.com/sydmudavanthery" target="_blank" rel="noopener me"><small>Take 03 &middot; Roll C</small><span>Facebook</span><em>sydmudavanthery</em><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11L11 5M6 5h5v5"/></svg></a><a href="https://x.com/sydmudavanthery" target="_blank" rel="noopener me"><small>Take 04 &middot; Roll D</small><span>X</span><em>@sydmudavanthery</em><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11L11 5M6 5h5v5"/></svg></a></nav>
+        </div>
+      </div>
     </div></div>
   </section>
 </main>
@@ -505,7 +544,7 @@ footer .in{max-width:1280px;margin:0 auto;padding:22px clamp(16px,4vw,48px);disp
   <figure><div class="lb-media" id="lbMedia"></div><figcaption id="lbCap"></figcaption></figure>
   <button class="lb-nav next" id="lbNext" type="button" aria-label="Next">&#8250;</button>
 </div>
-<footer><div class="in"><span>© 2026 Muhammed Sayeed Mudavantheri</span><button class="totop" id="toTop" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 13V3M4 7l4-4 4 4"/></svg>Back to top</button><span>Shot, cut, mixed &amp; scored in Qatar</span></div></footer>
+<footer><div class="in"><span>© 2026 Muhammed Sayeed Mudavantheri</span><button class="totop" id="toTop" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 13V3M4 7l4-4 4 4"/></svg>Back to top</button><span class="foot-soc"><a href="https://www.instagram.com/sayeed_mdv/" target="_blank" rel="noopener">Instagram</a><a href="https://qa.linkedin.com/in/sayeed-mudavantheri-5b550228" target="_blank" rel="noopener">LinkedIn</a><a href="https://www.facebook.com/sydmudavanthery" target="_blank" rel="noopener">Facebook</a><a href="https://x.com/sydmudavanthery" target="_blank" rel="noopener">X</a></span></div></footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
@@ -651,6 +690,13 @@ const WORKS=[
   if(location.hash==='#work-all') openShow();
 })();
 
+(function(){const s=document.getElementById('slate');if(!s)return;
+  const d=new Date();document.getElementById('slateDate').textContent=String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+String(d.getFullYear()).slice(2);
+  let t;const clap=()=>{clearTimeout(t);s.classList.add('clap');};const open=()=>{t=setTimeout(()=>s.classList.remove('clap'),reduce?0:260)};
+  s.querySelectorAll('a').forEach(a=>{a.addEventListener('pointerenter',clap);a.addEventListener('pointerleave',open);a.addEventListener('focus',clap);a.addEventListener('blur',open);
+    a.addEventListener('click',()=>{s.classList.add('clap');setTimeout(()=>s.classList.remove('clap'),400)})});
+  if(!reduce)new IntersectionObserver((es,o)=>{if(es[0].isIntersecting){s.classList.add('clap');setTimeout(()=>s.classList.remove('clap'),380);setTimeout(()=>{s.classList.add('clap');setTimeout(()=>s.classList.remove('clap'),300)},1400);o.disconnect()}},{threshold:.6}).observe(s);
+})();
 document.getElementById('toTop').addEventListener('click',()=>{scrollTo({top:0,behavior:reduce?'auto':'smooth'});setTimeout(()=>document.querySelector('.brand').focus({preventScroll:true}),reduce?0:900)});
 
 /* ---------- chat assistant: answers from Sayeed's own information, hands off to WhatsApp ---------- */
@@ -662,6 +708,7 @@ document.getElementById('toTop').addEventListener('click',()=>{scrollTo({top:0,b
     {k:['service','offer','do you do','what do','skills','work on','help with'],a:()=>`Sayeed shoots, edits and mixes: <b>videography and photography</b> (sport, equestrian, documentary, brand), <b>editing and motion graphics</b> (news, broadcast, social), and <b>sound and music</b> (recording, mixing, music direction, arrangement, lyrics).`},
     {k:['price','pricing','rate','cost','charge','quote','budget','fee','how much'],a:()=>`Pricing depends on the project: shoot days, crew, editing and music. Send Sayeed a short brief and he'll reply with a quote. ${wa('Send a brief on WhatsApp')}`},
     {k:['hire','book','available','availability','freelance','project','collab','work with'],a:()=>`Yes, Sayeed is open to projects, including select freelance work. The fastest way is WhatsApp: ${wa()}. Or email muhammedsayeed@gmail.com.`},
+    {k:['social','instagram','insta','facebook','linkedin','twitter','x.com','follow'],a:()=>`Follow Sayeed on <a href="https://www.instagram.com/sayeed_mdv/" target="_blank" rel="noopener">Instagram</a>, <a href="https://qa.linkedin.com/in/sayeed-mudavantheri-5b550228" target="_blank" rel="noopener">LinkedIn</a>, <a href="https://www.facebook.com/sydmudavanthery" target="_blank" rel="noopener">Facebook</a> and <a href="https://x.com/sydmudavanthery" target="_blank" rel="noopener">X</a>.`},
     {k:['contact','email','phone','number','whatsapp','reach','call'],a:()=>`WhatsApp or call <b>+974 7003 1661</b>, or email <b>muhammedsayeed@gmail.com</b>. ${wa('Open WhatsApp')}`},
     {k:['current','now','job','wathnan','horse','equestrian','racing','hathab'],a:()=>`Since 2024 Sayeed has been <b>Videographer &amp; Multimedia Editor at Wathnan Stud</b>, filming horse racing, heritage horses and Hathab show jumping.`},
     {k:['experience','career','worked','background','history','radio','suno','olive','24 news','news'],a:()=>`Sayeed has worked in the industry since 2011: sound engineer at Fx Media, Axen Recording Studio and R-Media Qatar; Junior Sound Engineer to <b>Digital Media Head</b> at Olive Suno Radio Network; Qatar Regional Video Editor at <b>24 News</b>; and now Wathnan Stud. Scroll to the Cut list for details.`},
