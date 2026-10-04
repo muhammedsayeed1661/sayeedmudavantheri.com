@@ -238,6 +238,16 @@ body.nogl .fallback{display:block;max-width:min(320px,80%);margin-top:32px}
 .bot-form input{flex:1;min-width:0;background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:10px 14px;color:var(--fg);font:16px var(--body)}
 .bot-form input:focus{outline:none;border-color:var(--accent)}
 .bot-form button{width:42px;height:42px;border-radius:50%;border:0;background:var(--accent);color:#1a1006;font-size:16px}
+.assoc{margin-top:clamp(40px,6vw,72px);border-top:1.5px solid var(--fg);padding-top:22px}
+.assoc-h{font-weight:800;font-size:clamp(28px,3.4vw,44px);line-height:1;margin:0 0 22px}
+.assoc-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(18px,3vw,40px)}
+.assoc-col small{display:flex;align-items:center;gap:10px;font:500 11px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--accent);padding-bottom:12px;border-bottom:1px solid var(--line);margin-bottom:6px}
+.assoc-col small span{color:var(--rec)}
+.assoc-col ul{list-style:none;margin:0;padding:0}
+.assoc-col li{font:800 clamp(22px,2.2vw,30px)/1.15 var(--display);text-transform:uppercase;padding:8px 0;border-bottom:1px solid color-mix(in srgb,var(--line) 60%,transparent);transition:color .25s,padding-left .25s}
+.assoc-col li:hover{color:var(--accent);padding-left:8px}
+.assoc-col li.more{font:400 13px/1.4 var(--body);text-transform:none;color:var(--muted);border:0}
+.assoc-col li.more:hover{padding-left:0;color:var(--muted)}
 /* contact */
 .scene.contact{align-items:flex-end}
 .contact .col{max-width:760px;margin:0 auto;text-align:center}
@@ -261,6 +271,8 @@ footer .in{max-width:1280px;margin:0 auto;padding:22px clamp(16px,4vw,48px);disp
   .tally,.rail{display:none}
   .chat span{display:none}
   .viewwork span{display:none}
+  .assoc-grid{grid-template-columns:minmax(0,1fr)}
+  .scene.gallery .assoc{margin-inline:22px}
   .show-head{flex-wrap:nowrap;flex-direction:column;align-items:stretch;gap:10px}
   .show-head>div:first-child{padding-right:56px}
   .show-x{position:absolute;top:18px;right:0}
@@ -379,6 +391,17 @@ footer .in{max-width:1280px;margin:0 auto;padding:22px clamp(16px,4vw,48px);disp
         <button class="ring-nav" id="ringNext" type="button" aria-label="Next">&#8250;</button>
       </div>
       <p class="hint" id="ringHint" style="margin-top:14px;justify-content:center">Drag to spin the reel &middot; Click the front frame to view</p>
+      <div class="assoc" id="clients">
+        <h3 class="assoc-h">Associated projects</h3>
+        <div class="assoc-grid">
+          <div class="assoc-col"><small><span>01</span>Sports events</small>
+            <ul><li>Delta Corporation</li><li>Al Shaqab</li><li>Ooredoo Qatar</li><li>Qatar Equestrian Center</li></ul></div>
+          <div class="assoc-col"><small><span>02</span>Social media content</small>
+            <ul><li>La Cigale Hotel</li><li>Pullman Doha West Bay</li></ul></div>
+          <div class="assoc-col"><small><span>03</span>Photography</small>
+            <ul><li>American Academy</li><li>Opso Café</li><li>Coffee Bean</li><li class="more">and more</li></ul></div>
+        </div>
+      </div>
     </div></div>
   </section>
 
@@ -630,6 +653,7 @@ const WORKS=[
     {k:['current','now','job','wathnan','horse','equestrian','racing','hathab'],a:()=>`Since 2024 Sayeed has been <b>Videographer &amp; Multimedia Editor at Wathnan Stud</b>, filming horse racing, heritage horses and Hathab show jumping.`},
     {k:['experience','career','worked','background','history','radio','suno','olive','24 news','news'],a:()=>`Sayeed has worked in the industry since 2011: sound engineer at Fx Media, Axen Recording Studio and R-Media Qatar; Junior Sound Engineer to <b>Digital Media Head</b> at Olive Suno Radio Network; Qatar Regional Video Editor at <b>24 News</b>; and now Wathnan Stud. Scroll to the Cut list for details.`},
     {k:['music','song','sing','lyric','compose','piano','record','mappila'],a:()=>`Sayeed is a musician, singer and lyricist. He has recorded 500+ songs, music-directed 100+, done 250+ arrangements and written 30+ original lyrics, including work on Thaqdeer, Pranayikkaruthe Aarum, Allah Allah and Puzhakkara.`},
+    {k:['client','clients','brand','brands','worked with','associated','projects','portfolio','ooredoo','shaqab','pullman','cigale','delta'],a:()=>`Associated projects include <b>sports events</b> for Delta Corporation, Al Shaqab, Ooredoo Qatar and Qatar Equestrian Center; <b>social media content</b> for La Cigale Hotel and Pullman Doha West Bay; and <b>photography</b> for American Academy, Opso Café, Coffee Bean and more.`},
     {k:['photo','al noor','alnoor','photography'],a:()=>`In 2024 Sayeed co-founded <b>Al Noor Photography</b>, covering sports, documentary and brand stories.`},
     {k:['world cup','fifa','messi','ronaldo','neymar'],a:()=>`Sayeed volunteered at the <b>FIFA World Cup Qatar 2022</b>, working on event operations at global scale, and met Messi, Ronaldo and Neymar along the way.`},
     {k:['where','location','based','qatar','doha','kerala','from'],a:()=>`Sayeed is based in <b>Doha, Qatar</b>, where he has worked since 2015. He's originally from Mudavantheri in Kerala, India.`},
