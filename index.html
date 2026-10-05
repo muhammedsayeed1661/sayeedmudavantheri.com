@@ -463,10 +463,10 @@ footer .in{max-width:1280px;margin:0 auto;padding:22px clamp(16px,4vw,48px);disp
         <a class="btn" href="#contact">Start a project <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
         <button class="btn ghost" type="button" data-showcase>View my work</button>
       </div>
-      <p class="hint" id="hint">Move your cursor and mini me runs to it &middot; Click me for a flip &middot; Scroll to change scene</p>
+      <p class="hint" id="hint">Move your cursor and mini me walks to it &middot; Click me for a photo &middot; Scroll to change scene</p>
       <img class="fallback" src="mascot-still.webp" alt="Mini Sayeed, a 3D character of Muhammed Sayeed holding a camera">
     </div></div>
-    <div class="hm" id="heroMascot"><button class="m-hit" id="hmHit" type="button" aria-label="Mini Sayeed: tap for a flip"></button><div class="m-say" id="hmSay" aria-live="polite"></div></div>
+    <div class="hm" id="heroMascot"><button class="m-hit" id="hmHit" type="button" aria-label="Mini Sayeed: tap for a photo"></button><div class="m-say" id="hmSay" aria-live="polite"></div></div>
   </section>
 
   <section class="scene" id="about" data-scene="1">
@@ -580,7 +580,7 @@ footer .in{max-width:1280px;margin:0 auto;padding:22px clamp(16px,4vw,48px);disp
       <div class="tag">Scene 05 &middot; The musician</div>
       <h2>I hear the edit</h2>
       <div class="photos">
-        <img class="p1" src="piano-portrait.jpg" alt="Sayeed smiling while seated at a grand piano">
+        <img class="p1" src="about-mascot.jpg" alt="Mini Sayeed, the 3D character of Muhammed Sayeed">
         <img class="p2" src="piano-keys.jpg" alt="Sayeed's hands playing a grand piano">
       </div>
       <div class="facts" style="margin-top:0">
@@ -686,7 +686,7 @@ const seen=new Set(); const so=new IntersectionObserver(es=>es.forEach(en=>{ if(
 document.querySelectorAll('[data-scene]').forEach(s=>so.observe(s));
 const gameSeen=new Set(); window.__trackGame=k=>{ if(!gameSeen.has(k)){gameSeen.add(k);track('game/'+k,'Game played: '+k)} };
 const fine=matchMedia('(pointer:fine)').matches;
-if(!fine) document.getElementById('hint').innerHTML='Tap anywhere below and mini me runs there &middot; Tap me for a flip';
+if(!fine) document.getElementById('hint').innerHTML='Tap anywhere below and mini me walks there &middot; Tap me for a photo';
 
 /* timecode */
 const tc=document.getElementById('tc'),t0=performance.now(),pad=n=>String(n).padStart(2,'0');
@@ -1307,22 +1307,23 @@ Promise.all([loadPts,fontReady,null,null]).then(([txt,_f,pTex,dTex])=>{
 <script>
 /* Mini Sayeed: 3D character built from Sayeed's own character sheet (faces untouched).
    Atlas cells: 0 front, 1 three-quarter left, 2 side left, 3 back, 4 three-quarter right, 5 camera pose.
+   Walking uses a cut-out rig of the side view (body + two jointed legs + swinging arm), so he walks like a person.
    One engine, two stages: the big one in the hero and the little buddy in the corner. */
 (()=>{
   if(!window.THREE) return;
   const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const FINE=matchMedia('(pointer:fine)').matches;
   const FW=360/560;
   const tl=new THREE.TextureLoader(), lt=u=>new Promise(r=>tl.load(u,t=>{t.minFilter=THREE.LinearFilter;t.generateMipmaps=false;r(t)},undefined,()=>r(null)));
-  const TEX=Promise.all([lt('mascot.webp'),lt('mascotdepth.png')]);
+  const TEX=Promise.all([lt('mascot.webp'),lt('mascotdepth.png'),lt('rig.webp'),lt('rigarm.png')]);
   const KEYS=[[0,0,0],[45,1,0],[90,2,0],[150,3,0],[210,3,0],[270,2,1],[315,4,0],[360,0,0]];
   const ease=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2, clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+  /* cell px (360x560 side view) -> plane units (figure height = 1) */
+  const PX=cx=>(cx/360-.5)*FW, PY=cy=>.5-cy/560;
+  const HIP=[180,342], KNEE=[188,452], SHOULDER=[165,175];
   let px=-1, py=-1, pmove=0;
   addEventListener('pointermove',e=>{ if(e.pointerType!=='mouse') return; px=e.clientX; py=e.clientY; pmove=performance.now()/1000; },{passive:true});
   const glow=(()=>{const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d');const g=x.createRadialGradient(64,64,0,64,64,64);
     g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(.18,'rgba(255,250,235,.9)');g.addColorStop(.45,'rgba(255,220,170,.25)');g.addColorStop(1,'rgba(255,220,170,0)');x.fillStyle=g;x.fillRect(0,0,128,128);return c;})();
-  const puff=(()=>{const c=document.createElement('canvas');c.width=c.height=64;const x=c.getContext('2d');const g=x.createRadialGradient(32,32,0,32,32,32);
-    g.addColorStop(0,'rgba(200,190,175,.55)');g.addColorStop(1,'rgba(200,190,175,0)');x.fillStyle=g;x.fillRect(0,0,64,64);return c;})();
 
   function Mascot(o){
     const host=o.host, hit=o.hit, say=o.say;
@@ -1334,14 +1335,15 @@ Promise.all([loadPts,fontReady,null,null]).then(([txt,_f,pTex,dTex])=>{
     const root=new THREE.Group(); scene.add(root);
     const shadow=new THREE.Mesh(new THREE.CircleGeometry(1,40),new THREE.MeshBasicMaterial({color:0,transparent:true,opacity:.4,depthWrite:false})); scene.add(shadow);
     const cell=k=>new THREE.Vector3(k%3,Math.floor(k/3),0);
-    const U={uMap:{value:null},uDep:{value:null},uAmt:{value:.12},uA:{value:0},uFlash:{value:0},uSq:{value:new THREE.Vector2(1,1)},uSway:{value:0},
+    /* ---- turntable sprite (standing, turning, posing) ---- */
+    const U={uMap:{value:null},uDep:{value:null},uAmt:{value:.12},uA:{value:0},uFlash:{value:0},uSway:{value:0},
       uCA:{value:cell(0)},uCB:{value:cell(1)},uMix:{value:0},uCP:{value:cell(5)},uPose:{value:0},uL:{value:new THREE.Vector3(.3,.4,1)}};
     const common=`uniform sampler2D uMap,uDep;uniform vec3 uCA,uCB,uCP;uniform float uMix,uPose;
       vec2 at(vec3 c,vec2 uv){ if(c.z>.5) uv.x=1.-uv.x; return vec2((c.x+uv.x)/3.,(uv.y+1.-c.y)/2.); }
       float dep(vec2 uv){ return mix(mix(texture2D(uDep,at(uCA,uv)).r,texture2D(uDep,at(uCB,uv)).r,uMix),texture2D(uDep,at(uCP,uv)).r,uPose); }`;
-    const mat=new THREE.ShaderMaterial({uniforms:U,transparent:true,depthWrite:false,
-      vertexShader:common+`uniform float uAmt,uSway;uniform vec2 uSq;varying vec2 vUv;
-        void main(){vUv=uv;vec3 p=position;p.z+=dep(uv)*uAmt;p.x+=uSway*uv.y*uv.y*.07;p.x*=uSq.x;p.y=(p.y+.5)*uSq.y-.5;
+    const mat=new THREE.ShaderMaterial({uniforms:U,transparent:true,depthWrite:false,depthTest:false,
+      vertexShader:common+`uniform float uAmt,uSway;varying vec2 vUv;
+        void main(){vUv=uv;vec3 p=position;p.z+=dep(uv)*uAmt;p.x+=uSway*uv.y*uv.y*.05;
           gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.);}`,
       fragmentShader:common+`uniform vec3 uL;uniform float uA,uFlash;varying vec2 vUv;
         void main(){vec4 c=mix(mix(texture2D(uMap,at(uCA,vUv)),texture2D(uMap,at(uCB,vUv)),uMix),texture2D(uMap,at(uCP,vUv)),uPose);
@@ -1351,47 +1353,63 @@ Promise.all([loadPts,fontReady,null,null]).then(([txt,_f,pTex,dTex])=>{
           vec3 col=c.rgb*(.86+.2*l);float r=pow(1.-max(n.z,0.),2.);col+=vec3(.95,.62,.25)*r*.4*c.a;
           col+=vec3(1.)*uFlash*uPose*.2*smoothstep(.55,0.,distance(vUv*vec2(1.,1.55),vec2(.0695,.697*1.55)));
           gl_FragColor=vec4(col,c.a*uA);}`});
-    root.add(new THREE.Mesh(new THREE.PlaneGeometry(FW,1,48,76),mat));
-    const flare=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(glow),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0}));
-    flare.scale.set(.4,.4,1); flare.position.set((.0695-.5)*FW,.197,.2); root.add(flare);
-    const ptex=new THREE.CanvasTexture(puff), puffs=[];
-    for(let k=0;k<14;k++){ const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:ptex,transparent:true,depthWrite:false,opacity:0})); sp.userData.life=0; scene.add(sp); puffs.push(sp); }
-    function dust(x,y,dir,big){ const sp=puffs.find(p=>p.userData.life<=0)||puffs[0]; sp.userData={life:1,x,y,vx:-dir*(30+Math.random()*40)*(big?1.6:1),vy:10+Math.random()*25,s:FH*(big?.1:.06)}; }
+    const sprite=new THREE.Mesh(new THREE.PlaneGeometry(FW,1,48,76),mat); root.add(sprite);
+    const flare=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(glow),transparent:true,depthWrite:false,depthTest:false,blending:THREE.AdditiveBlending,opacity:0}));
+    flare.scale.set(.4,.4,1); flare.position.set((.0695-.5)*FW,.197,.2); flare.renderOrder=9; root.add(flare);
+
+    /* ---- walking rig (side view, faces left; mirrored to walk right) ---- */
+    const RU={uRig:{value:null},uArmW:{value:null},uArm:{value:0},uA:U.uA};
+    const rigFrag=`uniform sampler2D uRig;uniform float uA,uTint;varying vec2 vA;void main(){vec4 c=texture2D(uRig,vA);if(c.a<.02)discard;gl_FragColor=vec4(c.rgb*.97*uTint,c.a*uA);}`;
+    const rig=new THREE.Group(); root.add(rig); rig.visible=false;
+    function part(rect,k,pivot,tint,order,arm){ const [x0,y0,x1,y1]=rect, sx=arm?30:2, sy=arm?46:2;
+      const g=new THREE.PlaneGeometry(PX(x1)-PX(x0),PY(y0)-PY(y1),sx,sy), uv=g.attributes.uv, A=new Float32Array(uv.count*2);
+      for(let i=0;i<uv.count;i++){ const u=uv.getX(i), v=uv.getY(i), cx=x0+u*(x1-x0), cy=y1-v*(y1-y0); A[i*2]=(k+cx/360)/2; A[i*2+1]=1-cy/560; }
+      g.setAttribute('aUv',new THREE.BufferAttribute(A,2));
+      const m=new THREE.ShaderMaterial({uniforms:{...RU,uTint:{value:tint}},transparent:true,depthWrite:false,depthTest:false,
+        vertexShader:arm?`uniform sampler2D uArmW;uniform float uArm;attribute vec2 aUv;varying vec2 vA;
+            void main(){vA=aUv;vec3 p=position;float w=texture2D(uArmW,vec2(aUv.x*2.,aUv.y)).r;vec2 s=vec2(${PX(SHOULDER[0]).toFixed(4)},${PY(SHOULDER[1]).toFixed(4)});
+              vec2 q=p.xy-s;float a=uArm*w,c=cos(a),n=sin(a);p.xy=s+vec2(c*q.x-n*q.y,n*q.x+c*q.y);gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.);}`
+          :`attribute vec2 aUv;varying vec2 vA;void main(){vA=aUv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
+        fragmentShader:rigFrag});
+      const mesh=new THREE.Mesh(g,m); mesh.renderOrder=order;
+      const grp=new THREE.Group(); grp.position.set(PX(pivot[0]),PY(pivot[1]),0);
+      mesh.position.set((PX(x0)+PX(x1))/2-PX(pivot[0]),(PY(y0)+PY(y1))/2-PY(pivot[1]),0); grp.add(mesh); return grp; }
+    function leg(tint,order,dx){ const thigh=part([118,320,242,462],1,HIP,tint,order), shin=part([88,446,242,560],1,KNEE,tint,order+1);
+      shin.position.set(PX(KNEE[0])-PX(HIP[0]),PY(KNEE[1])-PY(HIP[1]),0); thigh.add(shin); thigh.position.x+=dx; rig.add(thigh); return {thigh,shin}; }
+    const farLeg=leg(.58,1,.012), nearLeg=leg(1,3,0);
+    const body=part([0,0,360,560],0,[180,280],1,5,true); body.position.set(PX(180),PY(280),0); rig.add(body);
 
     function setView(a){ a=((a%360)+360)%360; let i=0; while(i<KEYS.length-2&&a>=KEYS[i+1][0]) i++;
       const A=KEYS[i],B=KEYS[i+1], f=(a-A[0])/(B[0]-A[0]);
       U.uCA.value.set(A[1]%3,Math.floor(A[1]/3),A[2]); U.uCB.value.set(B[1]%3,Math.floor(B[1]/3),B[2]);
-      U.uMix.value=clamp((f-.35)/.3,0,1); const near=f<.5?A[0]:B[0]; return ((a-near+540)%360-180)*Math.PI/180; }
+      U.uMix.value=clamp((f-.42)/.16,0,1); const near=f<.5?A[0]:B[0]; return ((a-near+540)%360-180)*Math.PI/180; }
 
     /* layout */
     let cw=0,ch=0,FH=300,ground=10,minX=0,maxX=0,x=-1,tx=-1;
     function fit(){ if(o.place) o.place(); const r=host.getBoundingClientRect(); if(Math.abs(r.width-cw)<1&&Math.abs(r.height-ch)<1) return;
       cw=Math.max(1,r.width); ch=Math.max(1,r.height); renderer.setSize(cw,ch,false);
       cam.left=0;cam.right=cw;cam.top=ch;cam.bottom=0;cam.updateProjectionMatrix();
-      FH=o.size(cw,ch); ground=o.ground?o.ground(ch):ch*.05; const half=FH*FW*.5; minX=half; maxX=Math.max(half,cw-half);
+      FH=o.size(cw,ch); ground=o.ground?o.ground(ch):ch*.05; const half=FH*FW*.45; minX=half; maxX=Math.max(half,cw-half);
       if(x<0){ x=o.startX?o.startX(minX,maxX):maxX*.6; tx=x; } x=clamp(x,minX,maxX); tx=clamp(tx,minX,maxX); }
 
     /* speech */
     let sayT=0; function talk(txt,ms=3200){ if(!say) return; say.textContent=txt; say.classList.add('on'); clearTimeout(sayT); sayT=setTimeout(()=>say.classList.remove('on'),ms); }
 
-    /* activities */
-    let act=null, nextAct=performance.now()/1000+(o.firstAct||3), lastPos=0, landT=-9, phase=0, ang=20, rx=0, pose=0, ready=false, active=true;
-    const POOL=o.pool||['wander','jump','flip','dance','spin','snap','wander','hop'];
-    function start(n,extra){ const t=performance.now()/1000; act={n,t0:t,dir:Math.random()<.5?-1:1,...(extra||{})};
-      const D={jump:.85,flip:1.05,spin:1,dance:2.8,snap:2.1,hop:.9,cart:1.15}; act.dur=D[n]||0;
-      if(n==='wander'){ let nx=minX+Math.random()*(maxX-minX); if(Math.abs(nx-x)<FH*.6) nx=x>(minX+maxX)/2?minX+Math.random()*(maxX-minX)*.3:maxX-Math.random()*(maxX-minX)*.3; tx=nx; act=null; }
-      if(n==='cart'){ act.dir=x>(minX+maxX)/2?-1:1; tx=clamp(x+act.dir*FH*1.1,minX,maxX); act.dir=Math.sign(tx-x)||1; }
-      if(n==='jump'||n==='flip'||n==='cart') setTimeout(()=>dust(x,ground,0,true),n==='cart'?80:120);
-    }
-    function trick(){ start(Math.random()<.5?'flip':'spin'); }
-
-    const api={ talk, trick, start, renderer,
+    /* everyday activities: walk somewhere, glance, look behind, take a photo */
+    let act=null, nextAct=performance.now()/1000+(o.firstAct||3), ang=20, rx=0, pose=0, ready=false, active=true;
+    let walking=false, walkW=0, phase=0, facingRight=false;
+    const POOL=o.pool||['wander','wander','glance','snap','lookback','wander'];
+    const DUR={snap:2.2,glance:1.8,lookback:2.2};
+    function start(n){ const t=performance.now()/1000;
+      if(n==='wander'){ let nx=minX+Math.random()*(maxX-minX); if(Math.abs(nx-x)<FH*.5) nx=x>(minX+maxX)/2?minX+Math.random()*(maxX-minX)*.35:maxX-Math.random()*(maxX-minX)*.35; tx=nx; act=null; return; }
+      tx=x; act={n,t0:t,dur:DUR[n]||1.5,side:Math.random()<.5?-1:1}; }
+    const api={ talk, start, renderer,
       set active(v){ active=v; if(v) kick(); }, get active(){return active},
-      get ready(){return ready}, runTo(clientX){ const r=host.getBoundingClientRect(); tx=clamp(clientX-r.left,minX,maxX); act=null; nextAct=performance.now()/1000+4; },
+      get ready(){return ready}, runTo(clientX){ const r=host.getBoundingClientRect(); tx=clamp(clientX-r.left,minX,maxX); act=null; nextAct=performance.now()/1000+5; },
       get x(){return x} };
 
-    TEX.then(([m,d])=>{ if(!m||!d) return; U.uMap.value=m; U.uDep.value=d; ready=true; if(o.onReady) o.onReady(api); });
-    if(hit){ hit.addEventListener('click',e=>{ e.stopPropagation(); if(o.onTap) o.onTap(api); else trick(); });
+    TEX.then(([m,d,rg,aw])=>{ if(!m||!d||!rg||!aw) return; U.uMap.value=m; U.uDep.value=d; RU.uRig.value=rg; RU.uArmW.value=aw; ready=true; if(o.onReady) o.onReady(api); });
+    if(hit){ hit.addEventListener('click',e=>{ e.stopPropagation(); if(o.onTap) o.onTap(api); else start('snap'); });
       hit.addEventListener('pointerenter',()=>{ if(o.onHover) o.onHover(api); }); }
     addEventListener('resize',()=>{cw=0;});
 
@@ -1399,61 +1417,60 @@ Promise.all([loadPts,fontReady,null,null]).then(([txt,_f,pTex,dTex])=>{
     function kick(){ if(!running){ running=true; last=performance.now()/1000; requestAnimationFrame(loop); } }
     function loop(){ if(!active||document.hidden){ running=false; return; } requestAnimationFrame(loop); fit();
       const t=performance.now()/1000, dt=clamp(t-last,0,.05); last=t;
-      if(o.visible&&!o.visible()){ return; }
+      if(o.visible&&!o.visible()) return;
       if(!ready) return;
       U.uA.value=Math.min(1,U.uA.value+dt*3);
       const r=host.getBoundingClientRect();
-      /* chase the cursor (hero only) */
-      if(o.chase&&!RM&&px>=0&&t-pmove<2.5){ const h=o.chase(); if(h&&py>=h.top&&py<=h.bottom&&!(act&&act.dur)){ tx=clamp(px-r.left,minX,maxX); nextAct=t+3; } }
-      let y=0, rz=0, sx=1, sy=1+(RM?0:Math.sin(t*2.6)*.008), spin=0, angAbs=null, inPose=false, flash=0;
-      /* run */
-      const dx=tx-x, moving=!RM&&!(act&&act.dur&&act.n!=='cart')&&Math.abs(dx)>3;
+      /* follow the cursor (hero only) */
+      if(o.chase&&!RM&&px>=0&&t-pmove<2.5&&!act){ const h=o.chase(); if(h&&py>=h.top&&py<=h.bottom){ tx=clamp(px-r.left,minX,maxX); nextAct=t+3; } }
       if(RM){ x=tx; }
-      if(moving){ const speed=Math.min(FH*1.5,Math.abs(dx)*5+FH*.25), dir=Math.sign(dx); x+=dir*Math.min(Math.abs(dx),speed*dt);
-        const prev=phase; phase+=dt*speed/(FH*.11); if(Math.floor(prev/Math.PI)!==Math.floor(phase/Math.PI)) dust(x-dir*FH*.12,ground,dir,false);
-        const run=Math.min(1,speed/(FH*.6)); y+=Math.abs(Math.sin(phase))*FH*.045*run; rz+=-dir*.09*run; sy*=1-.035*Math.cos(phase*2)*run;
-        angAbs=dir<0?90:270; lastPos=t; }
-      else if(lastPos&&t-lastPos<.05){ landT=t; lastPos=0; nextAct=Math.max(nextAct,t+1.2); }
-      const lt0=t-landT; if(lt0>=0&&lt0<.18){ const u=Math.sin(lt0/.18*Math.PI); sy*=1-.07*u; sx*=1+.05*u; }
-      /* tricks */
-      if(act&&act.dur){ const u=(t-act.t0)/act.dur;
-        if(u>=1){ if(act.n==='flip'||act.n==='jump'||act.n==='spin'||act.n==='cart'){ landT=t; dust(x,ground,0,true); } act=null; nextAct=t+(o.gap?o.gap():2.5+Math.random()*2.5); }
-        else{ const n=act.n;
-          if(n==='jump'||n==='flip'||n==='spin'||n==='cart'){ const sq=.13, air=n==='jump'?.74:.75;
-            if(u<sq){ const k=u/sq; sy*=1-.13*k; sx*=1+.09*k; }
-            else if(u<sq+air){ const k=(u-sq)/air, h=(n==='flip'?.55:n==='cart'?.32:n==='spin'?.3:.45)*(o.air||1); y+=Math.sin(k*Math.PI)*FH*h; sy*=1+.07*Math.sin(k*Math.PI); sx*=1-.05*Math.sin(k*Math.PI);
-              if(n==='flip') rz+=ease(k)*Math.PI*2*act.dir;
-              if(n==='cart'){ rz+=-ease(k)*Math.PI*2*act.dir; x+=act.dir*0; }
-              if(n==='spin') spin=ease(k)*360; }
-            else { const k=(u-sq-air)/(1-sq-air); sy*=1-.1*Math.sin(k*Math.PI); sx*=1+.07*Math.sin(k*Math.PI); } }
-          if(n==='hop'){ const k=(u*2)%1; y+=Math.sin(k*Math.PI)*FH*.12; sy*=1+.04*Math.sin(k*Math.PI); }
-          if(n==='dance'){ const b=u*act.dur*2.4, k=b%1, side=Math.floor(b)%2?1:-1; y+=Math.abs(Math.sin(k*Math.PI))*FH*.07; rz+=Math.sin(b*Math.PI)*.1; angAbs=side*38; sy*=1-.05*Math.cos(k*Math.PI*2); if(Math.floor(b)===4) spin=ease(k)*360; }
-          if(n==='snap'){ inPose=true; const st=u*act.dur; if(st>.75&&st<1.2) flash=st<.8?(st-.75)/.05:Math.pow(1-(st-.8)/.4,2); }
-        } }
-      /* cartwheel moves him sideways */
-      if(act&&act.n==='cart'){ const u=(t-act.t0)/act.dur; if(u>.13&&u<.88) x+=act.dir*FH*1.1*dt/(act.dur*.75); tx=x; }
+      /* walking: turn to face the way, then step; feet are planted (distance drives the stride) */
+      const dx=tx-x, far=Math.abs(dx), want=!RM&&!act&&far>FH*.035;
+      if(want) facingRight=dx>0;
+      const sideAng=facingRight?270:90;
+      let angAbs=null, inPose=false, flash=0;
+      if(want||walkW>.02) angAbs=sideAng;
+      const sideNear=Math.abs(((ang-sideAng)%360+540)%360-180)<10;
+      walking=want&&sideNear;
+      walkW+=((walking?1:0)-walkW)*Math.min(1,dt*(walking?7:9));
+      if(walking){ const speed=FH*(far>FH*2?.62:.48)*Math.min(1,.35+walkW), step=Math.min(far,speed*dt*walkW); x+=Math.sign(dx)*step; phase+=step/(FH*.27)*Math.PI; }
+      else if(walkW<.05) phase=Math.round(phase/Math.PI)*Math.PI;   /* settle with feet together */
+      const rigOn=sideNear&&(walking||walkW>.02);
+      /* activities */
+      if(act){ const u=(t-act.t0)/act.dur;
+        if(u>=1){ act=null; nextAct=t+(o.gap?o.gap():3+Math.random()*3); }
+        else if(act.n==='snap'){ inPose=true; const st=u*act.dur; if(st>.8&&st<1.25) flash=st<.85?(st-.8)/.05:Math.pow(1-(st-.85)/.4,2); }
+        else if(act.n==='glance') angAbs=act.side*42;
+        else if(act.n==='lookback') angAbs=u<.15||u>.85?act.side*45:(act.side>0?150:210); }
       x=clamp(x,minX,maxX);
-      /* idle tricks */
-      if(!RM&&!act&&!moving&&t>nextAct&&o.auto!==false){ const n=POOL[Math.floor(Math.random()*POOL.length)]; start(n); if(n==='wander') nextAct=t+2+Math.random()*2; }
-      /* facing */
+      if(!RM&&!act&&!want&&walkW<.05&&t>nextAct&&o.auto!==false){ start(POOL[Math.floor(Math.random()*POOL.length)]); nextAct=t+2.5+Math.random()*2; }
+      /* facing the cursor when standing */
       if(angAbs===null){ const fx=r.left+x; const tgx=px>=0?clamp((px-fx)/(innerWidth*.35),-1,1):-.4; angAbs=RM?20:-tgx*50; }
       let target=angAbs; target+=360*Math.round((ang-target)/360);
-      ang+=(target-ang)*Math.min(1,dt*(moving?14:7));
+      ang+=(target-ang)*Math.min(1,dt*(want?6:4.5));
       const ty=py>=0?clamp((py-(r.top+ch-ground-FH*.85))/(innerHeight*.5),-1,1):0; rx+=(ty-rx)*Math.min(1,dt*5);
-      const resid=setView(ang+spin);
-      pose+=((inPose?1:0)-pose)*Math.min(1,dt*10); U.uPose.value=pose;
-      root.rotation.set(rx*.08,pose>.5?0:-resid*.55,rz);
-      U.uSway.value=RM?0:Math.sin(t*1.3)*.1*(moving?0:1);
-      U.uSq.value.set(sx,sy); U.uL.value.set(.4,.5-rx*.5,1);
+      const resid=setView(ang);
+      pose+=((inPose?1:0)-pose)*Math.min(1,dt*9); U.uPose.value=pose;
+      /* rig pose */
+      sprite.visible=!rigOn; rig.visible=rigOn;
+      let bob=0;
+      if(rigOn){ const w=walkW, p=phase;
+        rig.scale.x=facingRight?-1:1;
+        nearLeg.thigh.rotation.z=-.36*Math.sin(p)*w; nearLeg.shin.rotation.z=(.06+.82*Math.pow(Math.max(0,Math.cos(p)),1.6))*w;
+        farLeg.thigh.rotation.z=-.36*Math.sin(p+Math.PI)*w; farLeg.shin.rotation.z=(.06+.82*Math.pow(Math.max(0,Math.cos(p+Math.PI)),1.6))*w;
+        RU.uArm.value=.2*Math.sin(p)*w;
+        bob=(.011*Math.cos(2*p)-.006)*w; rig.rotation.z=.025*w; rig.position.y=bob; }
+      root.rotation.set(rigOn?0:rx*.08,rigOn||pose>.5?0:-resid*.55,0);
+      U.uSway.value=RM||rigOn?0:Math.sin(t*1.1)*.08;
+      U.uL.value.set(.4,.5-rx*.5,1);
       U.uFlash.value=flash; flare.material.opacity=flash*pose;
-      root.scale.setScalar(FH); root.position.set(x,ground+FH*.5+y,0);
-      /* rotate around the body centre for flips: compensate y */
-      shadow.position.set(x,ground+2,-5); const lift=y/FH; shadow.scale.set(FH*FW*.42*(1-lift*.5),FH*.035*(1-lift*.5),1); shadow.material.opacity=.38*(1-lift*.8);
-      for(const sp of puffs){ const d=sp.userData; if(d.life>0){ d.life-=dt*1.6; d.x+=d.vx*dt; d.y+=d.vy*dt; const k=1-d.life; sp.position.set(d.x,d.y+FH*.02,-1); sp.scale.setScalar(d.s*(1+k*1.8)); sp.material.opacity=Math.max(0,d.life)*.9; } else sp.material.opacity=0; }
+      const breathe=RM||rigOn?1:1+Math.sin(t*2.4)*.006;
+      root.scale.set(FH,FH*breathe,FH); root.position.set(x,ground+FH*.5*breathe,0);
+      shadow.position.set(x,ground+2,-5); shadow.scale.set(FH*FW*.4,FH*.034,1);
       /* hit box + bubble follow him */
-      if(hit){ const w=FH*FW*.62, b=`${Math.round(x-w/2)}|${Math.round(ground+y)}|${Math.round(w)}|${Math.round(FH*.97)}`;
+      if(hit){ const w=FH*FW*.62, b=`${Math.round(x-w/2)}|${Math.round(ground)}|${Math.round(w)}|${Math.round(FH*.97)}`;
         if(b!==hitBox){ hitBox=b; const q=b.split('|'); hit.style.left=q[0]+'px'; hit.style.bottom=q[1]+'px'; hit.style.width=q[2]+'px'; hit.style.height=q[3]+'px'; } }
-      if(say&&say.classList.contains('on')){ say.style.left=Math.round(Math.max(x+FH*.1,Math.min(cw,say.offsetWidth+4)))+'px'; say.style.bottom=Math.round(ground+FH*.98+y)+'px'; }
+      if(say&&say.classList.contains('on')){ say.style.left=Math.round(Math.max(x+FH*.1,Math.min(cw,say.offsetWidth+4)))+'px'; say.style.bottom=Math.round(ground+FH*.98)+'px'; }
       renderer.render(scene,cam);
     }
     kick();
@@ -1470,19 +1487,19 @@ Promise.all([loadPts,fontReady,null,null]).then(([txt,_f,pTex,dTex])=>{
     hero=Mascot({host:hm,hit:document.getElementById('hmHit'),say:document.getElementById('hmSay'),
       place(){ if(narrowNow()){ const hr=heroEl.getBoundingClientRect(), hb=hint.getBoundingClientRect(); const top=hb.bottom-hr.top+8; hm.style.top=top+'px'; hm.style.height=Math.max(200,Math.min(460,innerHeight-top-14))+'px'; }
         else { hm.style.top=''; hm.style.height=''; } },
-      size:(w,h)=>narrowNow()?Math.min(h*.8,400):Math.min(h*.64,580), air:.7,
+      size:(w,h)=>narrowNow()?Math.min(h*.84,420):Math.min(h*.7,620),
       ground:h=>narrowNow()?h*.04:h*.07,
       startX:(a,b)=>narrowNow()?(a+b)/2:a+(b-a)*.55,
       chase:()=>heroEl.getBoundingClientRect(),
       visible:()=>heroIn,
-      firstAct:4.5,
-      onReady:api=>setTimeout(()=>{ api.talk('Hi! I’m Sayeed 👋',3600); api.start('hop'); },700),
-      onTap:api=>{ const L=['Ta-da! ✨','Again? Okay!','Wheee!','Did you get that on camera?']; api.start(Math.random()<.6?'flip':'cart'); setTimeout(()=>api.talk(L[Math.floor(Math.random()*L.length)],2200),700); try{ if(typeof track==='function') track('mascot-flip'); }catch(e){} },
-      onHover:api=>{ if(Math.random()<.35) api.talk('Catch me if you can!',1800); }
+      firstAct:5,
+      onReady:api=>setTimeout(()=>api.talk('Hi! I’m Sayeed 👋',3600),700),
+      onTap:api=>{ api.start('snap'); setTimeout(()=>api.talk('Say cheese! 📸',2000),300); try{ if(typeof track==='function') track('mascot-photo'); }catch(e){} },
+      onHover:api=>{ if(Math.random()<.35) api.talk('Click me for a photo 📸',1800); }
     });
     if(!hero) hm.style.display='none';
     else{
-      /* touch: tap anywhere in the hero (not on a link/button) and he runs there */
+      /* touch: tap anywhere in the hero (not on a link/button) and he walks there */
       heroEl.addEventListener('pointerdown',e=>{ if(e.pointerType==='mouse'||e.target.closest('a,button,input')) return; hero.runTo(e.clientX); });
       if('IntersectionObserver' in window) new IntersectionObserver(es=>es.forEach(e=>{ heroIn=e.isIntersecting; hero.active=heroIn; }),{threshold:0}).observe(heroEl);
     }
@@ -1497,19 +1514,19 @@ Promise.all([loadPts,fontReady,null,null]).then(([txt,_f,pTex,dTex])=>{
       if(heroEl) qo.observe(heroEl); if(foot) qo.observe(foot); } else heroMost=false;
     const shown=()=>bot.hidden&&!footIn&&!(heroMost&&hero);
     const buddy=Mascot({host:bhost,hit:document.getElementById('buddyHit'),say:document.getElementById('buddySay'),
-      size:(w,h)=>h*.62, ground:h=>h*.06, startX:(a,b)=>b, air:.6,
-      pool:['wander','jump','flip','dance','snap','spin','hop','cart','wander'], gap:()=>4+Math.random()*4, firstAct:3,
+      size:(w,h)=>h*.66, ground:h=>h*.05, startX:(a,b)=>b,
+      pool:['wander','glance','snap','wander','lookback'], gap:()=>4+Math.random()*4, firstAct:3,
       visible:()=>{ const s=shown(); bhost.classList.toggle('off',!s||!buddy||!buddy.ready); if(!s) bhost.querySelector('.m-say').classList.remove('on');
-        if(s&&buddy&&buddy.ready&&!greeted){ greeted=true; const hr=new Date().getHours(); buddy.talk((hr<12?'Good morning!':hr<18?'Hi there!':'Good evening!')+' Tap me to chat 💬',4000); buddy.start('hop'); }
+        if(s&&buddy&&buddy.ready&&!greeted){ greeted=true; const hr=new Date().getHours(); buddy.talk((hr<12?'Good morning!':hr<18?'Hi there!':'Good evening!')+' Tap me to chat 💬',4000); }
         return s; },
-      onTap:api=>{ api.start('flip'); try{ if(typeof track==='function') track('buddy-click'); }catch(e){} setTimeout(()=>{ if(bot.hidden) chatBtn.click(); },RM?0:1000); },
+      onTap:api=>{ api.start('glance'); try{ if(typeof track==='function') track('buddy-click'); }catch(e){} setTimeout(()=>{ if(bot.hidden) chatBtn.click(); },RM?0:500); },
       onHover:api=>{ api.talk('Tap me to chat 💬',2000); }
     });
     if(buddy){
       const LINES={about:'That’s my story. Short version: sound + image.',work:'Newsroom, radio, race days… busy years!',gallery:'Hover a photo, it comes alive in colour.',services:'Need a video, a mix or an AI tool? Tap me.',music:'Fancy the camera challenge? Beat my score!',contact:'Say hi on WhatsApp, I reply fast.'};
-      const DO={gallery:'snap',music:'snap',services:'jump',contact:'dance',about:'hop',work:'cart'};
+      const DO={gallery:'snap',music:'snap',services:'wander',contact:'glance',about:'glance',work:'wander'};
       const seen=new Set();
-      if('IntersectionObserver' in window){ const io=new IntersectionObserver(es=>es.forEach(e=>{ if(!e.isIntersecting||!greeted) return; const id=e.target.id; if(seen.has(id)) return; seen.add(id); buddy.talk(LINES[id]); buddy.start(DO[id]||'hop'); }),{threshold:.45});
+      if('IntersectionObserver' in window){ const io=new IntersectionObserver(es=>es.forEach(e=>{ if(!e.isIntersecting||!greeted) return; const id=e.target.id; if(seen.has(id)) return; seen.add(id); buddy.talk(LINES[id]); buddy.start(DO[id]||'glance'); }),{threshold:.45});
         Object.keys(LINES).forEach(id=>{const el=document.getElementById(id); if(el) io.observe(el);}); }
     } else bhost.style.display='none';
   }
