@@ -233,14 +233,20 @@ body.nogl .fallback{display:block;max-width:min(320px,80%);margin-top:32px}
 /* chat button */
 .chat{position:fixed;right:clamp(14px,2vw,28px);bottom:calc(env(safe-area-inset-bottom,0px) + 18px);z-index:30;display:flex;align-items:center;gap:10px;padding:12px 18px 12px 14px;border-radius:999px;background:var(--accent);color:#1a1006;font-weight:700;font-size:14px;text-decoration:none;box-shadow:0 14px 30px -10px rgba(0,0,0,.7);transition:transform .2s}
 .chat:hover{transform:translateY(-3px)}
-.buddy{position:fixed;right:clamp(8px,1.6vw,22px);bottom:calc(env(safe-area-inset-bottom,0px) + 66px);z-index:31;width:140px;height:220px;cursor:pointer;transition:opacity .35s,transform .35s;-webkit-tap-highlight-color:transparent}
-.buddy canvas{width:100%;height:100%;display:block}
-.buddy.off{opacity:0;transform:translateY(20px) scale(.9);pointer-events:none}
-.buddy:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:12px}
-.buddy-say{position:absolute;right:calc(100% - 18px);top:6px;width:max-content;max-width:190px;padding:9px 13px;border-radius:14px 14px 4px 14px;background:var(--fg);color:#111;font-weight:600;font-size:13px;line-height:1.35;box-shadow:0 12px 28px -10px rgba(0,0,0,.7);opacity:0;transform:translateY(6px) scale(.96);transform-origin:100% 100%;transition:opacity .25s,transform .25s;pointer-events:none}
-.buddy-say.on{opacity:1;transform:none}
-@media (max-width:700px){.buddy{width:92px;height:146px;bottom:calc(env(safe-area-inset-bottom,0px) + 70px)}.buddy-say{font-size:12px;max-width:150px}}
-@media print{.buddy{display:none}}
+.hero{position:relative}
+.hm{position:absolute;right:clamp(56px,6vw,110px);top:0;bottom:0;width:42%;z-index:3;pointer-events:none}
+.hm canvas,.buddy canvas{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
+.m-hit{position:absolute;left:0;bottom:0;width:0;height:0;padding:0;margin:0;border:0;background:transparent;cursor:pointer;pointer-events:auto;border-radius:40% 40% 20% 20%;-webkit-tap-highlight-color:transparent}
+.m-hit:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.m-say{position:absolute;left:0;bottom:0;width:max-content;max-width:200px;padding:9px 13px;border-radius:14px 14px 4px 14px;background:var(--fg);color:#111;font-weight:600;font-size:13px;line-height:1.35;box-shadow:0 12px 28px -10px rgba(0,0,0,.7);opacity:0;transform:translate(-100%,6px) scale(.96);transform-origin:100% 100%;transition:opacity .25s,transform .25s;pointer-events:none;z-index:2}
+.m-say.on{opacity:1;transform:translate(-100%,0)}
+body.nogl .hm{display:none}
+@media (max-width:899px),(max-aspect-ratio:1/1){.hm{left:0;right:0;width:auto;top:auto;bottom:auto}}
+.buddy{position:fixed;right:clamp(8px,1.6vw,22px);bottom:calc(env(safe-area-inset-bottom,0px) + 62px);z-index:31;width:270px;height:250px;pointer-events:none;transition:opacity .35s,transform .35s}
+.buddy.off{opacity:0;transform:translateY(20px) scale(.9)}
+.buddy.off .m-hit{pointer-events:none}
+@media (max-width:700px){.buddy{width:180px;height:165px;bottom:calc(env(safe-area-inset-bottom,0px) + 70px)}.m-say{font-size:12px;max-width:150px}}
+@media print{.buddy,.hm{display:none}}
 .chat svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linejoin:round}
 .chat::before{content:"";position:absolute;top:6px;right:8px;width:8px;height:8px;border-radius:50%;background:#2ecc71;box-shadow:0 0 0 2px var(--accent)}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
@@ -457,9 +463,10 @@ footer .in{max-width:1280px;margin:0 auto;padding:22px clamp(16px,4vw,48px);disp
         <a class="btn" href="#contact">Start a project <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
         <button class="btn ghost" type="button" data-showcase>View my work</button>
       </div>
-      <p class="hint" id="hint">Move your cursor to light me &middot; Click to scatter &middot; Scroll to change scene</p>
-      <img class="fallback" src="cutout.webp" alt="Muhammed Sayeed seated on a wooden crate holding a cinema camera">
+      <p class="hint" id="hint">Move your cursor and mini me runs to it &middot; Click me for a flip &middot; Scroll to change scene</p>
+      <img class="fallback" src="mascot-still.webp" alt="Mini Sayeed, a 3D character of Muhammed Sayeed holding a camera">
     </div></div>
+    <div class="hm" id="heroMascot"><button class="m-hit" id="hmHit" type="button" aria-label="Mini Sayeed: tap for a flip"></button><div class="m-say" id="hmSay" aria-live="polite"></div></div>
   </section>
 
   <section class="scene" id="about" data-scene="1">
@@ -628,7 +635,7 @@ footer .in{max-width:1280px;margin:0 auto;padding:22px clamp(16px,4vw,48px);disp
     </div></div>
   </section>
 </main>
-<div class="buddy off" id="buddy" role="button" tabindex="0" aria-label="Mini Sayeed: open chat"><div class="buddy-say" id="buddySay" aria-live="polite"></div></div>
+<div class="buddy off" id="buddy"><button class="m-hit" id="buddyHit" type="button" aria-label="Mini Sayeed: open chat"></button><div class="m-say" id="buddySay" aria-live="polite"></div></div>
 <button class="chat" id="chat" type="button" aria-controls="bot" aria-expanded="false">
   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 10h8M8 13h5"/></svg><span>Chat with me</span></button>
 <div class="bot" id="bot" hidden role="dialog" aria-label="Chat about Sayeed">
@@ -679,7 +686,7 @@ const seen=new Set(); const so=new IntersectionObserver(es=>es.forEach(en=>{ if(
 document.querySelectorAll('[data-scene]').forEach(s=>so.observe(s));
 const gameSeen=new Set(); window.__trackGame=k=>{ if(!gameSeen.has(k)){gameSeen.add(k);track('game/'+k,'Game played: '+k)} };
 const fine=matchMedia('(pointer:fine)').matches;
-if(!fine) document.getElementById('hint').innerHTML='Drag to turn me &middot; Tap to scatter &middot; Scroll to change scene';
+if(!fine) document.getElementById('hint').innerHTML='Tap anywhere below and mini me runs there &middot; Tap me for a flip';
 
 /* timecode */
 const tc=document.getElementById('tc'),t0=performance.now(),pad=n=>String(n).padStart(2,'0');
@@ -1071,7 +1078,7 @@ const loadPts=fetch('points.txt').then(async r=>{if(!r.ok)throw 0;
 const fontReady=(document.fonts&&document.fonts.load)?Promise.race([document.fonts.load('900 200px "Big Shoulders Display"'),new Promise(r=>setTimeout(r,1500))]).catch(()=>{}):Promise.resolve();
 
 const loadTex=u=>new Promise(res=>new THREE.TextureLoader().load(u,t=>{t.minFilter=THREE.LinearFilter;t.magFilter=THREE.LinearFilter;t.generateMipmaps=false;t.wrapS=t.wrapT=THREE.ClampToEdgeWrapping;res(t)},undefined,()=>res(null)));
-Promise.all([loadPts,fontReady,loadTex('portrait.webp'),loadTex('depth.png')]).then(([txt,_f,pTex,dTex])=>{
+Promise.all([loadPts,fontReady,null,null]).then(([txt,_f,pTex,dTex])=>{
   const bin=atob(txt.trim()),u8=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++)u8[i]=bin.charCodeAt(i);
   const buf=u8.buffer, N=new DataView(buf).getUint32(0,true);
   const q=new Int16Array(buf,4,N*3), cc=new Uint8Array(buf,4+N*6,N*3);
@@ -1278,6 +1285,7 @@ Promise.all([loadPts,fontReady,loadTex('portrait.webp'),loadTex('depth.png')]).t
     let ph=0; if(photo){ const intro=1-Math.pow(1-U.uIntro.value,3); ph=(i===0?1-f:0)*(1-burstNow);
       PU.uOp.value=ph*Math.min(1,intro*1.5); PU.uAmt.value=1.75*intro*(1-burstNow*.6); photo.visible=PU.uOp.value>.01;
       const lx=(reduce?.3:mx)*1.7, ly=(reduce?.4:my)*1.5+.25; PU.uLight.value.x+=(lx-PU.uLight.value.x)*.12; PU.uLight.value.y+=(ly-PU.uLight.value.y)*.12; }
+    if(!photo) ph=(i===0?1-f:0);
     U.uDim.value=lay[3]*(1-ph);
     const sway=reduce?0:Math.sin(t*.35)*.1;
     ry+=((reduce?0:mx*.5)+sway-ry)*.06; rx+=((reduce?0:-my*.2)-rx)*.06;
@@ -1297,129 +1305,214 @@ Promise.all([loadPts,fontReady,loadTex('portrait.webp'),loadTex('depth.png')]).t
 })();
 </script>
 <script>
-/* Mini Sayeed: 3D mascot built from Sayeed's own character sheet (faces untouched).
-   Atlas cells: 0 front, 1 three-quarter left, 2 side left, 3 back, 4 three-quarter right, 5 camera pose */
+/* Mini Sayeed: 3D character built from Sayeed's own character sheet (faces untouched).
+   Atlas cells: 0 front, 1 three-quarter left, 2 side left, 3 back, 4 three-quarter right, 5 camera pose.
+   One engine, two stages: the big one in the hero and the little buddy in the corner. */
 (()=>{
-  const host=document.getElementById('buddy'); if(!host||!window.THREE) return;
-  const say=document.getElementById('buddySay'), chatBtn=document.getElementById('chat'), bot=document.getElementById('bot');
+  if(!window.THREE) return;
   const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let renderer; try{ renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,powerPreference:'low-power'}); }catch(e){ return; }
-  if(renderer.capabilities.maxVertexTextures<1) return;
-  renderer.setPixelRatio(Math.min(2,devicePixelRatio||1)); renderer.setClearColor(0,0);
-  host.insertBefore(renderer.domElement,host.firstChild); renderer.domElement.setAttribute('aria-hidden','true');
-  const FH=6.2, FW=FH*360/560;
-  const scene=new THREE.Scene(), cam=new THREE.PerspectiveCamera(26,140/220,.1,60); cam.position.set(0,.45,16); cam.lookAt(0,.45,0);
-  const root=new THREE.Group(); scene.add(root);
-  const shadow=new THREE.Mesh(new THREE.CircleGeometry(1,40),new THREE.MeshBasicMaterial({color:0,transparent:true,opacity:.4,depthWrite:false}));
-  shadow.rotation.x=-Math.PI/2; shadow.position.set(0,-FH/2+.2,0); scene.add(shadow);
-  const cell=k=>new THREE.Vector3(k%3,Math.floor(k/3),0);
-  const U={uMap:{value:null},uDep:{value:null},uAmt:{value:.75},uA:{value:0},uFlash:{value:0},uSq:{value:new THREE.Vector2(1,1)},uSway:{value:0},
-    uCA:{value:cell(0)},uCB:{value:cell(1)},uMix:{value:0},uCP:{value:cell(5)},uPose:{value:0},uL:{value:new THREE.Vector3(.3,.4,1)}};
-  const common=`uniform sampler2D uMap,uDep;uniform vec3 uCA,uCB,uCP;uniform float uMix,uPose;
-    vec2 at(vec3 c,vec2 uv){ if(c.z>.5) uv.x=1.-uv.x; return vec2((c.x+uv.x)/3.,(uv.y+1.-c.y)/2.); }
-    float dep(vec2 uv){ return mix(mix(texture2D(uDep,at(uCA,uv)).r,texture2D(uDep,at(uCB,uv)).r,uMix),texture2D(uDep,at(uCP,uv)).r,uPose); }`;
-  const mat=new THREE.ShaderMaterial({uniforms:U,transparent:true,depthWrite:false,
-    vertexShader:common+`uniform float uAmt,uSway;uniform vec2 uSq;varying vec2 vUv;
-      const float FH=${FH.toFixed(2)};
-      void main(){vUv=uv;vec3 p=position;float d=dep(uv);p.z+=d*uAmt;
-        p.x+=uSway*uv.y*uv.y*.45; p.x*=uSq.x; p.y=(p.y+FH*.5)*uSq.y-FH*.5;
-        gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.);}`,
-    fragmentShader:common+`uniform vec3 uL;uniform float uA,uFlash;varying vec2 vUv;
-      void main(){vec4 c=mix(mix(texture2D(uMap,at(uCA,vUv)),texture2D(uMap,at(uCB,vUv)),uMix),texture2D(uMap,at(uCP,vUv)),uPose);
-        if(c.a<.02)discard;
-        vec2 e=vec2(1./120.,1./187.);float dx=dep(vUv+vec2(e.x,0.))-dep(vUv-vec2(e.x,0.));float dy=dep(vUv+vec2(0.,e.y))-dep(vUv-vec2(0.,e.y));
-        vec3 n=normalize(vec3(-dx*5.,-dy*5.,1.));float l=max(dot(n,normalize(uL)),0.);
-        vec3 col=c.rgb*(.86+.2*l);float r=pow(1.-max(n.z,0.),2.);col+=vec3(.95,.62,.25)*r*.4*c.a;
-        col+=vec3(1.)*uFlash*uPose*.2*smoothstep(.55,0.,distance(vUv*vec2(1.,1.55),vec2(.0695,.697*1.55)));
-        gl_FragColor=vec4(col,c.a*uA);}`});
-  root.add(new THREE.Mesh(new THREE.PlaneGeometry(FW,FH,60,94),mat));
-  /* lens flash sprite */
-  const fc=document.createElement('canvas'); fc.width=fc.height=128; const fx=fc.getContext('2d'); const gr=fx.createRadialGradient(64,64,0,64,64,64);
-  gr.addColorStop(0,'rgba(255,255,255,1)'); gr.addColorStop(.18,'rgba(255,250,235,.9)'); gr.addColorStop(.45,'rgba(255,220,170,.25)'); gr.addColorStop(1,'rgba(255,220,170,0)'); fx.fillStyle=gr; fx.fillRect(0,0,128,128);
-  const flare=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(fc),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0}));
-  flare.scale.set(2.4,2.4,1); root.add(flare);
-  const LENS={x:(.0695-.5)*FW,y:(.697-.5)*FH};
-
-  /* turntable: angle (deg) → two neighbouring views + crossfade. +angle turns him to face the viewer's left */
-  const KEYS=[[0,0,0],[45,1,0],[90,2,0],[150,3,0],[210,3,0],[270,2,1],[315,4,0],[360,0,0]];
-  function setView(a){ a=((a%360)+360)%360; let i=0; while(i<KEYS.length-2&&a>=KEYS[i+1][0]) i++;
-    const A=KEYS[i],B=KEYS[i+1], f=(a-A[0])/(B[0]-A[0]);
-    U.uCA.value.set(A[1]%3,Math.floor(A[1]/3),A[2]); U.uCB.value.set(B[1]%3,Math.floor(B[1]/3),B[2]);
-    U.uMix.value=Math.min(1,Math.max(0,(f-.35)/.3));
-    const near=f<.5?A[0]:B[0]; return ((a-near+540)%360-180)*Math.PI/180; }
-
-  let ready=false;
+  const FINE=matchMedia('(pointer:fine)').matches;
+  const FW=360/560;
   const tl=new THREE.TextureLoader(), lt=u=>new Promise(r=>tl.load(u,t=>{t.minFilter=THREE.LinearFilter;t.generateMipmaps=false;r(t)},undefined,()=>r(null)));
-  Promise.all([lt('mascot.webp'),lt('mascotdepth.png')]).then(([m,d])=>{ if(!m||!d) return; U.uMap.value=m; U.uDep.value=d; setTimeout(()=>{ready=true;},RM?200:1400); });
+  const TEX=Promise.all([lt('mascot.webp'),lt('mascotdepth.png')]);
+  const KEYS=[[0,0,0],[45,1,0],[90,2,0],[150,3,0],[210,3,0],[270,2,1],[315,4,0],[360,0,0]];
+  const ease=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2, clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+  let px=-1, py=-1, pmove=0;
+  addEventListener('pointermove',e=>{ if(e.pointerType!=='mouse') return; px=e.clientX; py=e.clientY; pmove=performance.now()/1000; },{passive:true});
+  const glow=(()=>{const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d');const g=x.createRadialGradient(64,64,0,64,64,64);
+    g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(.18,'rgba(255,250,235,.9)');g.addColorStop(.45,'rgba(255,220,170,.25)');g.addColorStop(1,'rgba(255,220,170,0)');x.fillStyle=g;x.fillRect(0,0,128,128);return c;})();
+  const puff=(()=>{const c=document.createElement('canvas');c.width=c.height=64;const x=c.getContext('2d');const g=x.createRadialGradient(32,32,0,32,32,32);
+    g.addColorStop(0,'rgba(200,190,175,.55)');g.addColorStop(1,'rgba(200,190,175,0)');x.fillStyle=g;x.fillRect(0,0,64,64);return c;})();
 
-  let cw=0,ch=0; function fit(){const r=host.getBoundingClientRect(); if(r.width===cw&&r.height===ch) return; cw=r.width;ch=r.height; renderer.setSize(cw,ch,false); cam.aspect=cw/ch; cam.updateProjectionMatrix();}
-  fit(); addEventListener('resize',fit);
+  function Mascot(o){
+    const host=o.host, hit=o.hit, say=o.say;
+    let renderer; try{ renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,powerPreference:'low-power'}); }catch(e){ return null; }
+    if(renderer.capabilities.maxVertexTextures<1){ renderer.dispose(); return null; }
+    renderer.setPixelRatio(Math.min(2,devicePixelRatio||1)); renderer.setClearColor(0,0);
+    host.insertBefore(renderer.domElement,host.firstChild); renderer.domElement.setAttribute('aria-hidden','true');
+    const scene=new THREE.Scene(), cam=new THREE.OrthographicCamera(0,1,1,0,-2000,2000); cam.position.z=1000;
+    const root=new THREE.Group(); scene.add(root);
+    const shadow=new THREE.Mesh(new THREE.CircleGeometry(1,40),new THREE.MeshBasicMaterial({color:0,transparent:true,opacity:.4,depthWrite:false})); scene.add(shadow);
+    const cell=k=>new THREE.Vector3(k%3,Math.floor(k/3),0);
+    const U={uMap:{value:null},uDep:{value:null},uAmt:{value:.12},uA:{value:0},uFlash:{value:0},uSq:{value:new THREE.Vector2(1,1)},uSway:{value:0},
+      uCA:{value:cell(0)},uCB:{value:cell(1)},uMix:{value:0},uCP:{value:cell(5)},uPose:{value:0},uL:{value:new THREE.Vector3(.3,.4,1)}};
+    const common=`uniform sampler2D uMap,uDep;uniform vec3 uCA,uCB,uCP;uniform float uMix,uPose;
+      vec2 at(vec3 c,vec2 uv){ if(c.z>.5) uv.x=1.-uv.x; return vec2((c.x+uv.x)/3.,(uv.y+1.-c.y)/2.); }
+      float dep(vec2 uv){ return mix(mix(texture2D(uDep,at(uCA,uv)).r,texture2D(uDep,at(uCB,uv)).r,uMix),texture2D(uDep,at(uCP,uv)).r,uPose); }`;
+    const mat=new THREE.ShaderMaterial({uniforms:U,transparent:true,depthWrite:false,
+      vertexShader:common+`uniform float uAmt,uSway;uniform vec2 uSq;varying vec2 vUv;
+        void main(){vUv=uv;vec3 p=position;p.z+=dep(uv)*uAmt;p.x+=uSway*uv.y*uv.y*.07;p.x*=uSq.x;p.y=(p.y+.5)*uSq.y-.5;
+          gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.);}`,
+      fragmentShader:common+`uniform vec3 uL;uniform float uA,uFlash;varying vec2 vUv;
+        void main(){vec4 c=mix(mix(texture2D(uMap,at(uCA,vUv)),texture2D(uMap,at(uCB,vUv)),uMix),texture2D(uMap,at(uCP,vUv)),uPose);
+          if(c.a<.02)discard;
+          vec2 e=vec2(1./120.,1./187.);float dx=dep(vUv+vec2(e.x,0.))-dep(vUv-vec2(e.x,0.));float dy=dep(vUv+vec2(0.,e.y))-dep(vUv-vec2(0.,e.y));
+          vec3 n=normalize(vec3(-dx*5.,-dy*5.,1.));float l=max(dot(n,normalize(uL)),0.);
+          vec3 col=c.rgb*(.86+.2*l);float r=pow(1.-max(n.z,0.),2.);col+=vec3(.95,.62,.25)*r*.4*c.a;
+          col+=vec3(1.)*uFlash*uPose*.2*smoothstep(.55,0.,distance(vUv*vec2(1.,1.55),vec2(.0695,.697*1.55)));
+          gl_FragColor=vec4(col,c.a*uA);}`});
+    root.add(new THREE.Mesh(new THREE.PlaneGeometry(FW,1,48,76),mat));
+    const flare=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(glow),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0}));
+    flare.scale.set(.4,.4,1); flare.position.set((.0695-.5)*FW,.197,.2); root.add(flare);
+    const ptex=new THREE.CanvasTexture(puff), puffs=[];
+    for(let k=0;k<14;k++){ const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:ptex,transparent:true,depthWrite:false,opacity:0})); sp.userData.life=0; scene.add(sp); puffs.push(sp); }
+    function dust(x,y,dir,big){ const sp=puffs.find(p=>p.userData.life<=0)||puffs[0]; sp.userData={life:1,x,y,vx:-dir*(30+Math.random()*40)*(big?1.6:1),vy:10+Math.random()*25,s:FH*(big?.1:.06)}; }
 
-  /* speech */
-  let sayT=0; function talk(txt,ms=3600){ say.textContent=txt; say.classList.add('on'); clearTimeout(sayT); sayT=setTimeout(()=>say.classList.remove('on'),ms); }
-  const hr=new Date().getHours(), greet=hr<12?'Good morning!':(hr<18?'Hi there!':'Good evening!');
-  let hop=-9, snap=-9, nextSnap=performance.now()/1000+9, glance=-9, nextGlance=performance.now()/1000+5;
-  function hello(){ talk(greet+' I’m mini Sayeed 👋',4200); hop=performance.now()/1000; }
-  const LINES={about:'That’s my story. Short version: sound + image.',work:'Newsroom, radio, race days… busy years!',gallery:'Hover a photo, it comes alive in colour.',services:'Need a video, a mix or an AI tool? Tap me.',music:'Fancy the camera challenge? Beat my score!',contact:'Say hi on WhatsApp, I reply fast.'};
-  const seen=new Set(); let greeted=false;
-  if('IntersectionObserver' in window){ const io=new IntersectionObserver(es=>es.forEach(e=>{ if(!e.isIntersecting||!ready||!greeted) return; const id=e.target.id; if(seen.has(id)||!LINES[id]) return; seen.add(id); talk(LINES[id]); hop=performance.now()/1000; if(id==='gallery'||id==='music') snap=hop+.3; }),{threshold:.45});
-    Object.keys(LINES).forEach(id=>{const el=document.getElementById(id); if(el) io.observe(el);}); }
-  /* stay out of the way: hide over the footer, and on small screens while the hero (with the big photo) is in view */
-  let heroIn=true, footIn=false;
-  if('IntersectionObserver' in window){ const hero=document.getElementById('hero'), foot=document.querySelector('footer');
-    const qo=new IntersectionObserver(es=>es.forEach(e=>{ if(e.target===hero) heroIn=e.intersectionRatio>.35; else footIn=e.isIntersecting; }),{threshold:[0,.35,.6]});
-    if(hero) qo.observe(hero); if(foot) qo.observe(foot); } else heroIn=false;
+    function setView(a){ a=((a%360)+360)%360; let i=0; while(i<KEYS.length-2&&a>=KEYS[i+1][0]) i++;
+      const A=KEYS[i],B=KEYS[i+1], f=(a-A[0])/(B[0]-A[0]);
+      U.uCA.value.set(A[1]%3,Math.floor(A[1]/3),A[2]); U.uCB.value.set(B[1]%3,Math.floor(B[1]/3),B[2]);
+      U.uMix.value=clamp((f-.35)/.3,0,1); const near=f<.5?A[0]:B[0]; return ((a-near+540)%360-180)*Math.PI/180; }
 
-  /* interaction */
-  let px=innerWidth*.4, py=innerHeight*.3, hover=0, jump=-9;
-  addEventListener('pointermove',e=>{px=e.clientX;py=e.clientY},{passive:true});
-  host.addEventListener('pointerenter',()=>{hover=1; hop=performance.now()/1000; if(ready&&!say.classList.contains('on')) talk('Tap me to chat 💬',2400);});
-  host.addEventListener('pointerleave',()=>hover=0);
-  function open(){ jump=performance.now()/1000; try{ if(typeof track==='function') track('buddy-click'); }catch(e){} setTimeout(()=>{ if(bot.hidden) chatBtn.click(); },RM?0:950); }
-  host.addEventListener('click',open);
-  host.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); open(); } });
+    /* layout */
+    let cw=0,ch=0,FH=300,ground=10,minX=0,maxX=0,x=-1,tx=-1;
+    function fit(){ if(o.place) o.place(); const r=host.getBoundingClientRect(); if(Math.abs(r.width-cw)<1&&Math.abs(r.height-ch)<1) return;
+      cw=Math.max(1,r.width); ch=Math.max(1,r.height); renderer.setSize(cw,ch,false);
+      cam.left=0;cam.right=cw;cam.top=ch;cam.bottom=0;cam.updateProjectionMatrix();
+      FH=o.size(cw,ch); ground=o.ground?o.ground(ch):ch*.05; const half=FH*FW*.5; minX=half; maxX=Math.max(half,cw-half);
+      if(x<0){ x=o.startX?o.startX(minX,maxX):maxX*.6; tx=x; } x=clamp(x,minX,maxX); tx=clamp(tx,minX,maxX); }
 
-  /* loop */
-  let ang=30,rx=0,pose=0,visible=true;
-  document.addEventListener('visibilitychange',()=>{visible=!document.hidden; if(visible) requestAnimationFrame(loop);});
-  const ease=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
-  function loop(){ if(!visible) return; requestAnimationFrame(loop); fit();
-    const t=performance.now()/1000, hide=!bot.hidden||footIn||(heroIn&&innerWidth<900);
-    host.classList.toggle('off',hide||!ready);
-    if(hide||!ready){ if(hide) say.classList.remove('on'); return; }
-    if(!greeted){ greeted=true; hello(); }
-    U.uA.value=Math.min(1,U.uA.value+.06);
-    const r=host.getBoundingClientRect(), hx=r.left+r.width/2, hy=r.top+r.height*.2;
-    const tx=Math.max(-1,Math.min(1,(px-hx)/(innerWidth*.35))), ty=Math.max(-1,Math.min(1,(py-hy)/(innerHeight*.5)));
-    /* where he faces: toward the cursor (front / 3/4 left / 3/4 right) */
-    let target=RM?20:-tx*50;
-    if(!RM&&t>nextGlance&&!hover){ glance=t; nextGlance=t+9+Math.random()*7; }
-    const gt=t-glance; if(gt>=0&&gt<2.4) target+=(gt<.5?ease(gt/.5):gt<1.8?1:1-ease((gt-1.8)/.6))*(target>=0?45:-45);
-    ang+=(target-ang)*(RM?1:.07); rx+=(ty-rx)*.08;
-    /* click: leap and spin a full 360 through every view */
-    let spin=0, sx=1, sy=1+(RM?0:Math.sin(t*2.6)*.008), y=0;
-    const jt=t-jump;
-    if(!RM&&jt>=0&&jt<1){ if(jt<.12){ const u=jt/.12; sy*=1-.1*u; sx*=1+.07*u; }
-      else if(jt<.84){ const u=(jt-.12)/.72; y+=Math.sin(u*Math.PI)*1.05; spin=ease(u)*360; sy*=1+.05*Math.sin(u*Math.PI); }
-      else { const u=(jt-.84)/.16; sy*=1-.07*Math.sin(u*Math.PI); sx*=1+.05*Math.sin(u*Math.PI); } }
-    const resid=setView(ang+spin);
-    root.rotation.set(rx*.08,-resid*.55,0);
-    U.uL.value.set(.4-tx*.6,.5-rx*.6,1);
-    U.uSway.value=RM?0:Math.sin(t*1.3)*.1;
-    const ht=t-hop; if(!RM&&ht>=0&&ht<.5) y+=Math.sin(ht/.5*Math.PI)*.3;
-    U.uSq.value.set(sx,sy); root.position.y=y;
-    shadow.scale.set(1.25-y*.25,.4,1); shadow.material.opacity=.4-y*.12;
-    /* camera pose: raise the camera and fire a flash now and then */
-    if(!RM&&t>nextSnap&&!hover&&jt>1.2){ snap=t; nextSnap=t+11+Math.random()*8; }
-    const st=t-snap, inPose=st>=0&&st<2.1&&!(jt>=0&&jt<1);
-    pose+=((inPose?1:0)-pose)*(RM?1:.18); U.uPose.value=pose;
-    if(pose>.5) root.rotation.y*=.3;
-    const fl=pose>.9&&st>.7&&st<1.2?(st<.76?(st-.7)/.06:Math.pow(1-(st-.76)/.44,2)):0;
-    U.uFlash.value=fl; flare.material.opacity=fl;
-    flare.position.set((LENS.x+U.uSway.value*.697*.697*.45)*sx,(LENS.y+FH/2)*sy-FH/2,1.1);
-    renderer.render(scene,cam);
+    /* speech */
+    let sayT=0; function talk(txt,ms=3200){ if(!say) return; say.textContent=txt; say.classList.add('on'); clearTimeout(sayT); sayT=setTimeout(()=>say.classList.remove('on'),ms); }
+
+    /* activities */
+    let act=null, nextAct=performance.now()/1000+(o.firstAct||3), lastPos=0, landT=-9, phase=0, ang=20, rx=0, pose=0, ready=false, active=true;
+    const POOL=o.pool||['wander','jump','flip','dance','spin','snap','wander','hop'];
+    function start(n,extra){ const t=performance.now()/1000; act={n,t0:t,dir:Math.random()<.5?-1:1,...(extra||{})};
+      const D={jump:.85,flip:1.05,spin:1,dance:2.8,snap:2.1,hop:.9,cart:1.15}; act.dur=D[n]||0;
+      if(n==='wander'){ let nx=minX+Math.random()*(maxX-minX); if(Math.abs(nx-x)<FH*.6) nx=x>(minX+maxX)/2?minX+Math.random()*(maxX-minX)*.3:maxX-Math.random()*(maxX-minX)*.3; tx=nx; act=null; }
+      if(n==='cart'){ act.dir=x>(minX+maxX)/2?-1:1; tx=clamp(x+act.dir*FH*1.1,minX,maxX); act.dir=Math.sign(tx-x)||1; }
+      if(n==='jump'||n==='flip'||n==='cart') setTimeout(()=>dust(x,ground,0,true),n==='cart'?80:120);
+    }
+    function trick(){ start(Math.random()<.5?'flip':'spin'); }
+
+    const api={ talk, trick, start, renderer,
+      set active(v){ active=v; if(v) kick(); }, get active(){return active},
+      get ready(){return ready}, runTo(clientX){ const r=host.getBoundingClientRect(); tx=clamp(clientX-r.left,minX,maxX); act=null; nextAct=performance.now()/1000+4; },
+      get x(){return x} };
+
+    TEX.then(([m,d])=>{ if(!m||!d) return; U.uMap.value=m; U.uDep.value=d; ready=true; if(o.onReady) o.onReady(api); });
+    if(hit){ hit.addEventListener('click',e=>{ e.stopPropagation(); if(o.onTap) o.onTap(api); else trick(); });
+      hit.addEventListener('pointerenter',()=>{ if(o.onHover) o.onHover(api); }); }
+    addEventListener('resize',()=>{cw=0;});
+
+    let last=performance.now()/1000, hitBox='', running=false;
+    function kick(){ if(!running){ running=true; last=performance.now()/1000; requestAnimationFrame(loop); } }
+    function loop(){ if(!active||document.hidden){ running=false; return; } requestAnimationFrame(loop); fit();
+      const t=performance.now()/1000, dt=clamp(t-last,0,.05); last=t;
+      if(o.visible&&!o.visible()){ return; }
+      if(!ready) return;
+      U.uA.value=Math.min(1,U.uA.value+dt*3);
+      const r=host.getBoundingClientRect();
+      /* chase the cursor (hero only) */
+      if(o.chase&&!RM&&px>=0&&t-pmove<2.5){ const h=o.chase(); if(h&&py>=h.top&&py<=h.bottom&&!(act&&act.dur)){ tx=clamp(px-r.left,minX,maxX); nextAct=t+3; } }
+      let y=0, rz=0, sx=1, sy=1+(RM?0:Math.sin(t*2.6)*.008), spin=0, angAbs=null, inPose=false, flash=0;
+      /* run */
+      const dx=tx-x, moving=!RM&&!(act&&act.dur&&act.n!=='cart')&&Math.abs(dx)>3;
+      if(RM){ x=tx; }
+      if(moving){ const speed=Math.min(FH*1.5,Math.abs(dx)*5+FH*.25), dir=Math.sign(dx); x+=dir*Math.min(Math.abs(dx),speed*dt);
+        const prev=phase; phase+=dt*speed/(FH*.11); if(Math.floor(prev/Math.PI)!==Math.floor(phase/Math.PI)) dust(x-dir*FH*.12,ground,dir,false);
+        const run=Math.min(1,speed/(FH*.6)); y+=Math.abs(Math.sin(phase))*FH*.045*run; rz+=-dir*.09*run; sy*=1-.035*Math.cos(phase*2)*run;
+        angAbs=dir<0?90:270; lastPos=t; }
+      else if(lastPos&&t-lastPos<.05){ landT=t; lastPos=0; nextAct=Math.max(nextAct,t+1.2); }
+      const lt0=t-landT; if(lt0>=0&&lt0<.18){ const u=Math.sin(lt0/.18*Math.PI); sy*=1-.07*u; sx*=1+.05*u; }
+      /* tricks */
+      if(act&&act.dur){ const u=(t-act.t0)/act.dur;
+        if(u>=1){ if(act.n==='flip'||act.n==='jump'||act.n==='spin'||act.n==='cart'){ landT=t; dust(x,ground,0,true); } act=null; nextAct=t+(o.gap?o.gap():2.5+Math.random()*2.5); }
+        else{ const n=act.n;
+          if(n==='jump'||n==='flip'||n==='spin'||n==='cart'){ const sq=.13, air=n==='jump'?.74:.75;
+            if(u<sq){ const k=u/sq; sy*=1-.13*k; sx*=1+.09*k; }
+            else if(u<sq+air){ const k=(u-sq)/air, h=(n==='flip'?.55:n==='cart'?.32:n==='spin'?.3:.45)*(o.air||1); y+=Math.sin(k*Math.PI)*FH*h; sy*=1+.07*Math.sin(k*Math.PI); sx*=1-.05*Math.sin(k*Math.PI);
+              if(n==='flip') rz+=ease(k)*Math.PI*2*act.dir;
+              if(n==='cart'){ rz+=-ease(k)*Math.PI*2*act.dir; x+=act.dir*0; }
+              if(n==='spin') spin=ease(k)*360; }
+            else { const k=(u-sq-air)/(1-sq-air); sy*=1-.1*Math.sin(k*Math.PI); sx*=1+.07*Math.sin(k*Math.PI); } }
+          if(n==='hop'){ const k=(u*2)%1; y+=Math.sin(k*Math.PI)*FH*.12; sy*=1+.04*Math.sin(k*Math.PI); }
+          if(n==='dance'){ const b=u*act.dur*2.4, k=b%1, side=Math.floor(b)%2?1:-1; y+=Math.abs(Math.sin(k*Math.PI))*FH*.07; rz+=Math.sin(b*Math.PI)*.1; angAbs=side*38; sy*=1-.05*Math.cos(k*Math.PI*2); if(Math.floor(b)===4) spin=ease(k)*360; }
+          if(n==='snap'){ inPose=true; const st=u*act.dur; if(st>.75&&st<1.2) flash=st<.8?(st-.75)/.05:Math.pow(1-(st-.8)/.4,2); }
+        } }
+      /* cartwheel moves him sideways */
+      if(act&&act.n==='cart'){ const u=(t-act.t0)/act.dur; if(u>.13&&u<.88) x+=act.dir*FH*1.1*dt/(act.dur*.75); tx=x; }
+      x=clamp(x,minX,maxX);
+      /* idle tricks */
+      if(!RM&&!act&&!moving&&t>nextAct&&o.auto!==false){ const n=POOL[Math.floor(Math.random()*POOL.length)]; start(n); if(n==='wander') nextAct=t+2+Math.random()*2; }
+      /* facing */
+      if(angAbs===null){ const fx=r.left+x; const tgx=px>=0?clamp((px-fx)/(innerWidth*.35),-1,1):-.4; angAbs=RM?20:-tgx*50; }
+      let target=angAbs; target+=360*Math.round((ang-target)/360);
+      ang+=(target-ang)*Math.min(1,dt*(moving?14:7));
+      const ty=py>=0?clamp((py-(r.top+ch-ground-FH*.85))/(innerHeight*.5),-1,1):0; rx+=(ty-rx)*Math.min(1,dt*5);
+      const resid=setView(ang+spin);
+      pose+=((inPose?1:0)-pose)*Math.min(1,dt*10); U.uPose.value=pose;
+      root.rotation.set(rx*.08,pose>.5?0:-resid*.55,rz);
+      U.uSway.value=RM?0:Math.sin(t*1.3)*.1*(moving?0:1);
+      U.uSq.value.set(sx,sy); U.uL.value.set(.4,.5-rx*.5,1);
+      U.uFlash.value=flash; flare.material.opacity=flash*pose;
+      root.scale.setScalar(FH); root.position.set(x,ground+FH*.5+y,0);
+      /* rotate around the body centre for flips: compensate y */
+      shadow.position.set(x,ground+2,-5); const lift=y/FH; shadow.scale.set(FH*FW*.42*(1-lift*.5),FH*.035*(1-lift*.5),1); shadow.material.opacity=.38*(1-lift*.8);
+      for(const sp of puffs){ const d=sp.userData; if(d.life>0){ d.life-=dt*1.6; d.x+=d.vx*dt; d.y+=d.vy*dt; const k=1-d.life; sp.position.set(d.x,d.y+FH*.02,-1); sp.scale.setScalar(d.s*(1+k*1.8)); sp.material.opacity=Math.max(0,d.life)*.9; } else sp.material.opacity=0; }
+      /* hit box + bubble follow him */
+      if(hit){ const w=FH*FW*.62, b=`${Math.round(x-w/2)}|${Math.round(ground+y)}|${Math.round(w)}|${Math.round(FH*.97)}`;
+        if(b!==hitBox){ hitBox=b; const q=b.split('|'); hit.style.left=q[0]+'px'; hit.style.bottom=q[1]+'px'; hit.style.width=q[2]+'px'; hit.style.height=q[3]+'px'; } }
+      if(say&&say.classList.contains('on')){ say.style.left=Math.round(Math.max(x+FH*.1,Math.min(cw,say.offsetWidth+4)))+'px'; say.style.bottom=Math.round(ground+FH*.98+y)+'px'; }
+      renderer.render(scene,cam);
+    }
+    kick();
+    document.addEventListener('visibilitychange',()=>{ if(!document.hidden&&active) kick(); });
+    return api;
   }
-  requestAnimationFrame(loop);
+  window.MiniSayeed=Mascot;
+
+  /* ---------- hero stage ---------- */
+  const heroEl=document.getElementById('hero'), hm=document.getElementById('heroMascot'), hint=document.getElementById('hint');
+  let heroIn=true, footIn=false, hero=null;
+  const narrowNow=()=>innerWidth<900||innerWidth/innerHeight<1;
+  if(heroEl&&hm){
+    hero=Mascot({host:hm,hit:document.getElementById('hmHit'),say:document.getElementById('hmSay'),
+      place(){ if(narrowNow()){ const hr=heroEl.getBoundingClientRect(), hb=hint.getBoundingClientRect(); const top=hb.bottom-hr.top+8; hm.style.top=top+'px'; hm.style.height=Math.max(200,Math.min(460,innerHeight-top-14))+'px'; }
+        else { hm.style.top=''; hm.style.height=''; } },
+      size:(w,h)=>narrowNow()?Math.min(h*.8,400):Math.min(h*.64,580), air:.7,
+      ground:h=>narrowNow()?h*.04:h*.07,
+      startX:(a,b)=>narrowNow()?(a+b)/2:a+(b-a)*.55,
+      chase:()=>heroEl.getBoundingClientRect(),
+      visible:()=>heroIn,
+      firstAct:4.5,
+      onReady:api=>setTimeout(()=>{ api.talk('Hi! I’m Sayeed 👋',3600); api.start('hop'); },700),
+      onTap:api=>{ const L=['Ta-da! ✨','Again? Okay!','Wheee!','Did you get that on camera?']; api.start(Math.random()<.6?'flip':'cart'); setTimeout(()=>api.talk(L[Math.floor(Math.random()*L.length)],2200),700); try{ if(typeof track==='function') track('mascot-flip'); }catch(e){} },
+      onHover:api=>{ if(Math.random()<.35) api.talk('Catch me if you can!',1800); }
+    });
+    if(!hero) hm.style.display='none';
+    else{
+      /* touch: tap anywhere in the hero (not on a link/button) and he runs there */
+      heroEl.addEventListener('pointerdown',e=>{ if(e.pointerType==='mouse'||e.target.closest('a,button,input')) return; hero.runTo(e.clientX); });
+      if('IntersectionObserver' in window) new IntersectionObserver(es=>es.forEach(e=>{ heroIn=e.isIntersecting; hero.active=heroIn; }),{threshold:0}).observe(heroEl);
+    }
+  }
+
+  /* ---------- corner buddy ---------- */
+  const bhost=document.getElementById('buddy'), bot=document.getElementById('bot'), chatBtn=document.getElementById('chat');
+  let heroMost=true, greeted=false;
+  if(bhost){
+    if('IntersectionObserver' in window){ const foot=document.querySelector('footer');
+      const qo=new IntersectionObserver(es=>es.forEach(e=>{ if(e.target===heroEl) heroMost=e.intersectionRatio>.3; else footIn=e.isIntersecting; }),{threshold:[0,.3,.6]});
+      if(heroEl) qo.observe(heroEl); if(foot) qo.observe(foot); } else heroMost=false;
+    const shown=()=>bot.hidden&&!footIn&&!(heroMost&&hero);
+    const buddy=Mascot({host:bhost,hit:document.getElementById('buddyHit'),say:document.getElementById('buddySay'),
+      size:(w,h)=>h*.62, ground:h=>h*.06, startX:(a,b)=>b, air:.6,
+      pool:['wander','jump','flip','dance','snap','spin','hop','cart','wander'], gap:()=>4+Math.random()*4, firstAct:3,
+      visible:()=>{ const s=shown(); bhost.classList.toggle('off',!s||!buddy||!buddy.ready); if(!s) bhost.querySelector('.m-say').classList.remove('on');
+        if(s&&buddy&&buddy.ready&&!greeted){ greeted=true; const hr=new Date().getHours(); buddy.talk((hr<12?'Good morning!':hr<18?'Hi there!':'Good evening!')+' Tap me to chat 💬',4000); buddy.start('hop'); }
+        return s; },
+      onTap:api=>{ api.start('flip'); try{ if(typeof track==='function') track('buddy-click'); }catch(e){} setTimeout(()=>{ if(bot.hidden) chatBtn.click(); },RM?0:1000); },
+      onHover:api=>{ api.talk('Tap me to chat 💬',2000); }
+    });
+    if(buddy){
+      const LINES={about:'That’s my story. Short version: sound + image.',work:'Newsroom, radio, race days… busy years!',gallery:'Hover a photo, it comes alive in colour.',services:'Need a video, a mix or an AI tool? Tap me.',music:'Fancy the camera challenge? Beat my score!',contact:'Say hi on WhatsApp, I reply fast.'};
+      const DO={gallery:'snap',music:'snap',services:'jump',contact:'dance',about:'hop',work:'cart'};
+      const seen=new Set();
+      if('IntersectionObserver' in window){ const io=new IntersectionObserver(es=>es.forEach(e=>{ if(!e.isIntersecting||!greeted) return; const id=e.target.id; if(seen.has(id)) return; seen.add(id); buddy.talk(LINES[id]); buddy.start(DO[id]||'hop'); }),{threshold:.45});
+        Object.keys(LINES).forEach(id=>{const el=document.getElementById(id); if(el) io.observe(el);}); }
+    } else bhost.style.display='none';
+  }
 })();
 </script>
 
