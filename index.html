@@ -242,10 +242,10 @@ body.nogl .fallback{display:block;max-width:min(320px,80%);margin-top:32px}
 .m-say.on{opacity:1;transform:translate(-100%,0)}
 body.nogl .hm{display:none}
 @media (max-width:899px),(max-aspect-ratio:1/1){.hm{left:0;right:0;width:auto;top:auto;bottom:auto}}
-.buddy{position:fixed;right:clamp(8px,1.6vw,22px);bottom:calc(env(safe-area-inset-bottom,0px) + 62px);z-index:31;width:270px;height:250px;pointer-events:none;transition:opacity .35s,transform .35s}
-.buddy.off{opacity:0;transform:translateY(20px) scale(.9)}
+.buddy{position:fixed;inset:0;z-index:31;pointer-events:none;transition:opacity .35s}
+.buddy.off{opacity:0}
 .buddy.off .m-hit{pointer-events:none}
-@media (max-width:700px){.buddy{width:180px;height:165px;bottom:calc(env(safe-area-inset-bottom,0px) + 70px)}.m-say{font-size:12px;max-width:150px}}
+@media (max-width:700px){.m-say{font-size:12px;max-width:150px}}
 @media print{.buddy,.hm{display:none}}
 .chat svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linejoin:round}
 .chat::before{content:"";position:absolute;top:6px;right:8px;width:8px;height:8px;border-radius:50%;background:#2ecc71;box-shadow:0 0 0 2px var(--accent)}
@@ -1312,6 +1312,7 @@ Promise.all([loadPts,fontReady,null,null]).then(([txt,_f,pTex,dTex])=>{
 (()=>{
   if(!window.THREE) return;
   const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const FINE=matchMedia('(pointer:fine)').matches;
   const FW=360/560;
   const tl=new THREE.TextureLoader(), lt=u=>new Promise(r=>tl.load(u,t=>{t.minFilter=THREE.LinearFilter;t.generateMipmaps=false;r(t)},undefined,()=>r(null)));
   const TEX=Promise.all([lt('mascot.webp'),lt('mascotdepth.png'),lt('rig.webp'),lt('rigarm.png')]);
@@ -1329,7 +1330,7 @@ Promise.all([loadPts,fontReady,null,null]).then(([txt,_f,pTex,dTex])=>{
     const host=o.host, hit=o.hit, say=o.say;
     let renderer; try{ renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,powerPreference:'low-power'}); }catch(e){ return null; }
     if(renderer.capabilities.maxVertexTextures<1){ renderer.dispose(); return null; }
-    renderer.setPixelRatio(Math.min(2,devicePixelRatio||1)); renderer.setClearColor(0,0);
+    renderer.setPixelRatio(Math.min(o.free?1.5:2,devicePixelRatio||1)); renderer.setClearColor(0,0);
     host.insertBefore(renderer.domElement,host.firstChild); renderer.domElement.setAttribute('aria-hidden','true');
     const scene=new THREE.Scene(), cam=new THREE.OrthographicCamera(0,1,1,0,-2000,2000); cam.position.z=1000;
     const root=new THREE.Group(); scene.add(root);
@@ -1382,15 +1383,17 @@ Promise.all([loadPts,fontReady,null,null]).then(([txt,_f,pTex,dTex])=>{
     function setView(a){ a=((a%360)+360)%360; let i=0; while(i<KEYS.length-2&&a>=KEYS[i+1][0]) i++;
       const A=KEYS[i],B=KEYS[i+1], f=(a-A[0])/(B[0]-A[0]);
       U.uCA.value.set(A[1]%3,Math.floor(A[1]/3),A[2]); U.uCB.value.set(B[1]%3,Math.floor(B[1]/3),B[2]);
-      U.uMix.value=clamp((f-.42)/.16,0,1); const near=f<.5?A[0]:B[0]; return ((a-near+540)%360-180)*Math.PI/180; }
+      U.uMix.value=clamp((f-.35)/.3,0,1); const near=f<.5?A[0]:B[0]; return ((a-near+540)%360-180)*Math.PI/180; }
 
     /* layout */
-    let cw=0,ch=0,FH=300,ground=10,minX=0,maxX=0,x=-1,tx=-1;
+    let cw=0,ch=0,FH=300,ground=10,tg=null,minX=0,maxX=0,x=-1,tx=-1,arriveCb=null;
+    const gMin=()=>Math.max(6,FH*.03), gMax=()=>Math.max(gMin(),ch-FH*1.04-8);
     function fit(){ if(o.place) o.place(); const r=host.getBoundingClientRect(); if(Math.abs(r.width-cw)<1&&Math.abs(r.height-ch)<1) return;
-      cw=Math.max(1,r.width); ch=Math.max(1,r.height); renderer.setSize(cw,ch,false);
+      const first=cw===0&&x<0; cw=Math.max(1,r.width); ch=Math.max(1,r.height); renderer.setSize(cw,ch,false);
       cam.left=0;cam.right=cw;cam.top=ch;cam.bottom=0;cam.updateProjectionMatrix();
-      FH=o.size(cw,ch); ground=o.ground?o.ground(ch):ch*.05; const half=FH*FW*.45; minX=half; maxX=Math.max(half,cw-half);
-      if(x<0){ x=o.startX?o.startX(minX,maxX):maxX*.6; tx=x; } x=clamp(x,minX,maxX); tx=clamp(tx,minX,maxX); }
+      FH=o.size(cw,ch); const half=FH*FW*.45; minX=half; maxX=Math.max(half,cw-half);
+      if(!o.free||first){ ground=o.ground?o.ground(ch):ch*.05; tg=null; }
+      if(x<0){ x=o.startX?o.startX(minX,maxX):maxX*.6; tx=x; } x=clamp(x,minX,maxX); tx=clamp(tx,minX,maxX); ground=clamp(ground,gMin(),Math.max(gMin(),ch-FH*.5)); }
 
     /* speech */
     let sayT=0; function talk(txt,ms=3200){ if(!say) return; say.textContent=txt; say.classList.add('on'); clearTimeout(sayT); sayT=setTimeout(()=>say.classList.remove('on'),ms); }
@@ -1405,7 +1408,10 @@ Promise.all([loadPts,fontReady,null,null]).then(([txt,_f,pTex,dTex])=>{
       tx=x; act={n,t0:t,dur:DUR[n]||1.5,side:Math.random()<.5?-1:1}; }
     const api={ talk, start, renderer,
       set active(v){ active=v; if(v) kick(); }, get active(){return active},
-      get ready(){return ready}, runTo(clientX){ const r=host.getBoundingClientRect(); tx=clamp(clientX-r.left,minX,maxX); act=null; nextAct=performance.now()/1000+5; },
+      get ready(){return ready}, get FH(){return FH},
+      walkTo(cx,cy,cb){ const r=host.getBoundingClientRect(); tx=clamp(cx-r.left,minX,maxX); if(o.free&&cy!=null) tg=clamp(ch-(cy-r.top),gMin(),gMax()); act=null; arriveCb=cb||null; nextAct=performance.now()/1000+8; },
+      home(){ const r=host.getBoundingClientRect(); if(o.homeAt){ const h=o.homeAt(cw,ch,FH); tx=clamp(h.x,minX,maxX); tg=h.g; arriveCb=null; } },
+      runTo(clientX){ const r=host.getBoundingClientRect(); tx=clamp(clientX-r.left,minX,maxX); act=null; nextAct=performance.now()/1000+5; },
       get x(){return x} };
 
     TEX.then(([m,d,rg,aw])=>{ if(!m||!d||!rg||!aw) return; U.uMap.value=m; U.uDep.value=d; RU.uRig.value=rg; RU.uArmW.value=aw; ready=true; if(o.onReady) o.onReady(api); });
@@ -1425,15 +1431,16 @@ Promise.all([loadPts,fontReady,null,null]).then(([txt,_f,pTex,dTex])=>{
       if(o.chase&&!RM&&px>=0&&t-pmove<2.5&&!act){ const h=o.chase(); if(h&&py>=h.top&&py<=h.bottom){ tx=clamp(px-r.left,minX,maxX); nextAct=t+3; } }
       if(RM){ x=tx; }
       /* walking: turn to face the way, then step; feet are planted (distance drives the stride) */
-      const dx=tx-x, far=Math.abs(dx), want=!RM&&!act&&far>FH*.035;
-      if(want) facingRight=dx>0;
+      if(RM&&tg!==null){ ground=tg; }
+      const dx=tx-x, dg=(tg===null?0:tg-ground), far=Math.hypot(dx,dg), want=!RM&&!act&&far>FH*.035;
+      if(want&&Math.abs(dx)>FH*.03) facingRight=dx>0;
       const sideAng=facingRight?270:90;
       let angAbs=null, inPose=false, flash=0;
       if(want||walkW>.02) angAbs=sideAng;
       const sideNear=Math.abs(((ang-sideAng)%360+540)%360-180)<10;
       walking=want&&sideNear;
       walkW+=((walking?1:0)-walkW)*Math.min(1,dt*(walking?7:9));
-      if(walking){ const speed=FH*(far>FH*2?.62:.48)*Math.min(1,.35+walkW), step=Math.min(far,speed*dt*walkW); x+=Math.sign(dx)*step; phase+=step/(FH*.27)*Math.PI; }
+      if(walking){ const sp=o.speed||[.48,.62], speed=FH*(far>FH*2?sp[1]:sp[0])*Math.min(1,.35+walkW), step=Math.min(far,speed*dt*walkW); x+=dx/far*step; ground+=dg/far*step; phase+=step/(FH*(o.stride||.27))*Math.PI; }
       else if(walkW<.05) phase=Math.round(phase/Math.PI)*Math.PI;   /* settle with feet together */
       const rigOn=sideNear&&(walking||walkW>.02);
       /* activities */
@@ -1443,6 +1450,7 @@ Promise.all([loadPts,fontReady,null,null]).then(([txt,_f,pTex,dTex])=>{
         else if(act.n==='glance') angAbs=act.side*42;
         else if(act.n==='lookback') angAbs=u<.15||u>.85?act.side*45:(act.side>0?150:210); }
       x=clamp(x,minX,maxX);
+      if(!want&&walkW<.05&&arriveCb){ const cb=arriveCb; arriveCb=null; cb(api); }
       if(!RM&&!act&&!want&&walkW<.05&&t>nextAct&&o.auto!==false){ start(POOL[Math.floor(Math.random()*POOL.length)]); nextAct=t+2.5+Math.random()*2; }
       /* facing the cursor when standing */
       if(angAbs===null){ const fx=r.left+x; const tgx=px>=0?clamp((px-fx)/(innerWidth*.35),-1,1):-.4; angAbs=RM?20:-tgx*50; }
@@ -1456,8 +1464,9 @@ Promise.all([loadPts,fontReady,null,null]).then(([txt,_f,pTex,dTex])=>{
       let bob=0;
       if(rigOn){ const w=walkW, p=phase;
         rig.scale.x=facingRight?-1:1;
-        nearLeg.thigh.rotation.z=-.36*Math.sin(p)*w; nearLeg.shin.rotation.z=(.06+.82*Math.pow(Math.max(0,Math.cos(p)),1.6))*w;
-        farLeg.thigh.rotation.z=-.36*Math.sin(p+Math.PI)*w; farLeg.shin.rotation.z=(.06+.82*Math.pow(Math.max(0,Math.cos(p+Math.PI)),1.6))*w;
+        const sw=o.swing||.36;
+        nearLeg.thigh.rotation.z=-sw*Math.sin(p)*w; nearLeg.shin.rotation.z=(.06+.82*Math.pow(Math.max(0,Math.cos(p)),1.6))*w;
+        farLeg.thigh.rotation.z=-sw*Math.sin(p+Math.PI)*w; farLeg.shin.rotation.z=(.06+.82*Math.pow(Math.max(0,Math.cos(p+Math.PI)),1.6))*w;
         RU.uArm.value=.2*Math.sin(p)*w;
         bob=(.011*Math.cos(2*p)-.006)*w; rig.rotation.z=.025*w; rig.position.y=bob; }
       root.rotation.set(rigOn?0:rx*.08,rigOn||pose>.5?0:-resid*.55,0);
@@ -1478,6 +1487,44 @@ Promise.all([loadPts,fontReady,null,null]).then(([txt,_f,pTex,dTex])=>{
     return api;
   }
   window.MiniSayeed=Mascot;
+
+
+  /* ---------- what each part of the page is ---------- */
+  const SVC={'Camera':'Camera work: video and photos for sport, equestrian, events and brands.','Edit & Motion':'Editing and motion graphics, from breaking news to brand films.','Sound & Music':'Recording, mixing and composing. Sound is where I started.','AI Development':'AI tools and apps, like this website and its chat bot.'};
+  const SECT={hero:'This is my intro. Hi!',about:'My story, from a village in Kerala to Qatar.',work:'My career, scene by scene.',gallery:'My photo and video work.',services:'What I can do for you.',music:'My music side, plus a little game.',contact:'All the ways to reach me.'};
+  function explain(el){ if(!el||!el.closest) return null; const c=q=>el.closest(q); let m;
+    if(c('#buddy,.hm')) return null;
+    if(c('#chat')) return 'This opens a chat with me. Ask anything, or jump to WhatsApp.';
+    if(c('.hire')) return 'Hire me! This takes you straight to my contact details.';
+    if(c('[data-game]')) return 'My camera challenge: set shutter, aperture and ISO to nail the shot.';
+    if(c('[data-showcase]')) return 'Opens my full work gallery, every photo in one place.';
+    if(c('.brand')) return 'My logo. Click it to go back to the top.';
+    if(c('#rail')) return 'Scene markers. Jump to any part of my story.';
+    if(c('.tally')) return 'A running timecode, like on my camera.';
+    if(c('#hero h1')) return 'That’s me! Muhammed Sayeed, from Kerala, living in Doha.';
+    if(c('.roles')) return 'What I do: shoot, edit, mix, compose, and build with AI.';
+    if(c('#hero .lede')) return 'My work in one line: true human stories with sound and image.';
+    if(c('#hero .cta a')) return 'Start a project with me. It takes you to my contact details.';
+    if(c('#hint')) return 'Little tips for playing with this page.';
+    if(c('.photos')) return 'Music came first. A small keyboard at home started it all.';
+    if(c('.facts')) return 'A few numbers from my studio and music years.';
+    if((m=c('.cuts li'))){ const h=m.querySelector('h3'), co=m.querySelector('.co'); return h?`${h.textContent.trim()}${co?' at '+co.textContent.trim():''}. One chapter of my career.`:'My career, one cut at a time.'; }
+    if(c('#clients')) return 'Brands and venues I’ve worked with in Qatar.';
+    if(c('#filters')) return 'Filter my work by category.';
+    if(c('#ringNext,#ringPrev')) return 'Step through my work one shot at a time.';
+    if(c('#ringStage,.ring-cap')) return 'My work reel. Drag to spin it, click a photo to open it.';
+    if((m=c('.svc article'))){ const h=m.querySelector('h3').textContent.trim(); return SVC[h]||('I offer '+h+'.'); }
+    if(c('.now')) return 'Side projects I’m building right now.';
+    if(c('.edu')) return 'Where I studied: multimedia and animation, and computer science.';
+    if(c('#piano')) return 'A real playable piano. Click the keys or use your keyboard.';
+    if(c('#game')) return 'My camera challenge. Pick a scene, set the camera, press the shutter.';
+    if((m=c('.slate-grid a'))){ const n=m.querySelector('span'); return 'Find me on '+(n?n.textContent.trim():'social media')+'. Click to open.'; }
+    if(c('a[href^="https://wa.me"]')) return 'Message me on WhatsApp. I reply fast.';
+    if(c('.line')) return 'My contact details. Hit Copy to grab them.';
+    if(c('#toTop')) return 'Back to the top, quick as a cut.';
+    if(c('footer')) return 'The end credits. Thanks for watching!';
+    if((m=c('section[id]'))&&SECT[m.id]) return SECT[m.id];
+    return null; }
 
   /* ---------- hero stage ---------- */
   const heroEl=document.getElementById('hero'), hm=document.getElementById('heroMascot'), hint=document.getElementById('hint');
@@ -1505,30 +1552,41 @@ Promise.all([loadPts,fontReady,null,null]).then(([txt,_f,pTex,dTex])=>{
     }
   }
 
-  /* ---------- corner buddy ---------- */
+  /* ---------- the guide: mini Sayeed walks to wherever the pointer stops and explains it ---------- */
   const bhost=document.getElementById('buddy'), bot=document.getElementById('bot'), chatBtn=document.getElementById('chat');
   let heroMost=true, greeted=false;
   if(bhost){
-    if('IntersectionObserver' in window){ const foot=document.querySelector('footer');
-      const qo=new IntersectionObserver(es=>es.forEach(e=>{ if(e.target===heroEl) heroMost=e.intersectionRatio>.3; else footIn=e.isIntersecting; }),{threshold:[0,.3,.6]});
-      if(heroEl) qo.observe(heroEl); if(foot) qo.observe(foot); } else heroMost=false;
-    const shown=()=>bot.hidden&&!footIn&&!(heroMost&&hero);
-    const buddy=Mascot({host:bhost,hit:document.getElementById('buddyHit'),say:document.getElementById('buddySay'),
-      size:(w,h)=>h*.66, ground:h=>h*.05, startX:(a,b)=>b,
-      pool:['wander','glance','snap','wander','lookback'], gap:()=>4+Math.random()*4, firstAct:3,
+    if('IntersectionObserver' in window&&heroEl) new IntersectionObserver(es=>es.forEach(e=>{ heroMost=e.intersectionRatio>.3; }),{threshold:[0,.3,.6]}).observe(heroEl); else heroMost=false;
+    const shown=()=>bot.hidden&&!(heroMost&&hero);
+    const small=()=>innerWidth<700;
+    const buddy=Mascot({host:bhost,hit:document.getElementById('buddyHit'),say:document.getElementById('buddySay'),free:true,
+      size:(w,h)=>small()?112:Math.min(190,Math.max(150,h*.2)),
+      ground:h=>small()?74:70,
+      startX:(a,b)=>b-(small()?4:14),
+      homeAt:(w,h,fh)=>({x:w-fh*FW*.45-(small()?4:14),g:small()?74:70}),
+      speed:[.9,1.15], stride:.34, swing:.42,
+      pool:['glance','snap','glance','lookback'], gap:()=>5+Math.random()*5, firstAct:3,
       visible:()=>{ const s=shown(); bhost.classList.toggle('off',!s||!buddy||!buddy.ready); if(!s) bhost.querySelector('.m-say').classList.remove('on');
-        if(s&&buddy&&buddy.ready&&!greeted){ greeted=true; const hr=new Date().getHours(); buddy.talk((hr<12?'Good morning!':hr<18?'Hi there!':'Good evening!')+' Tap me to chat 💬',4000); }
+        if(s&&buddy&&buddy.ready&&!greeted){ greeted=true; buddy.talk(FINE?'Stop your pointer anywhere and I’ll walk over and explain it 👋':'Tap me to chat 💬',4200); }
         return s; },
       onTap:api=>{ api.start('glance'); try{ if(typeof track==='function') track('buddy-click'); }catch(e){} setTimeout(()=>{ if(bot.hidden) chatBtn.click(); },RM?0:500); },
       onHover:api=>{ api.talk('Tap me to chat 💬',2000); }
     });
-    if(buddy){
-      const LINES={about:'That’s my story. Short version: sound + image.',work:'Newsroom, radio, race days… busy years!',gallery:'Hover a photo, it comes alive in colour.',services:'Need a video, a mix or an AI tool? Tap me.',music:'Fancy the camera challenge? Beat my score!',contact:'Say hi on WhatsApp, I reply fast.'};
-      const DO={gallery:'snap',music:'snap',services:'wander',contact:'glance',about:'glance',work:'wander'};
-      const seen=new Set();
-      if('IntersectionObserver' in window){ const io=new IntersectionObserver(es=>es.forEach(e=>{ if(!e.isIntersecting||!greeted) return; const id=e.target.id; if(seen.has(id)) return; seen.add(id); buddy.talk(LINES[id]); buddy.start(DO[id]||'glance'); }),{threshold:.45});
-        Object.keys(LINES).forEach(id=>{const el=document.getElementById(id); if(el) io.observe(el);}); }
-    } else bhost.style.display='none';
+    if(!buddy) bhost.style.display='none';
+    /* pointer rests → walk over and explain (mouse/trackpad only) */
+    if(FINE){
+      let restX=-1, restY=-1, lastTxt='', lastRest=performance.now()/1000;
+      setInterval(()=>{ const t=performance.now()/1000; if(px<0||t-pmove<.65) return;
+        if(Math.hypot(px-restX,py-restY)<24) { if(buddy&&shown()&&t-lastRest>16){ lastRest=t; buddy.home(); } return; }
+        restX=px; restY=py; lastRest=t;
+        const el=document.elementFromPoint(px,py), txt=explain(el); if(!txt) return;
+        if(heroMost&&hero){ if(txt!==lastTxt){ hero.talk(txt,3600); lastTxt=txt; } return; }
+        if(!buddy||!shown()) return;
+        const fh=buddy.FH, side=px>innerWidth/2?-1:1;
+        const sayIt=()=>{ if(txt!==lastTxt||true){ buddy.talk(txt,4200); lastTxt=txt; } };
+        buddy.walkTo(px+side*fh*.62, py+fh*.5, sayIt);
+      },220);
+    }
   }
 })();
 </script>
