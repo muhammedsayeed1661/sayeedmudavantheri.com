@@ -143,7 +143,7 @@
     /* stone texture + inscription */
     gx.globalCompositeOperation = 'source-atop';
     for (let i = 0; i < 2600; i++) { gx.fillStyle = `rgba(${90 + r() * 60|0},${30 + r() * 20|0},20,${r() * .07})`; gx.fillRect(r() * W, 400 + r() * 1200, 2 + r() * 30, 1 + r() * 3); }
-    gx.fillStyle = 'rgba(255,150,80,.16)'; gx.font = `${GS * .07}px Anton, Impact, sans-serif`; gx.textAlign = 'center'; gx.fillText('INDIA', GX, GB - .77 * GS);
+    gx.fillStyle = 'rgba(255,150,80,.16)'; gx.font = `${GS * .07}px Anton, Impact, sans-serif`; cfill(gx, 'INDIA', GX, GB - .77 * GS);
     const lg = gx.createLinearGradient(GX - GS / 2, 0, GX + GS / 2, 0); lg.addColorStop(0, 'rgba(255,120,50,.22)'); lg.addColorStop(.5, 'rgba(0,0,0,0)'); lg.addColorStop(1, 'rgba(255,120,50,.22)');
     gx.fillStyle = lg; gx.fillRect(0, 0, W, H); gx.globalCompositeOperation = 'source-over';
     x.save(); x.shadowColor = 'rgba(255,140,60,.85)'; x.shadowBlur = 40; x.drawImage(gc, 0, 0); x.restore();
@@ -215,6 +215,8 @@
     for (let i = 0; i < density / 30; i++) { x.globalAlpha = .5; x.lineWidth = 1 + r() * 2; x.beginPath(); const sx = r() * c.width, sy = r() * c.height; x.moveTo(sx, sy); x.lineTo(sx + 60 + r() * 200, sy + (r() - .5) * 20); x.stroke(); }
     x.restore(); return c;
   }
+  /* draw text centred on cx by measuring it ourselves (some mobile browsers ignore textAlign:'center' for Malayalam) */
+  function cfill(x, text, cx, y) { x.textAlign = 'left'; try { x.direction = 'ltr'; } catch (e) {} const w = x.measureText(text).width; x.fillText(text, cx - w / 2, y); }
   function fitFont(x, text, family, weight, maxW, start) { let s = start; do { x.font = `${weight} ${s}px ${family}`; s -= 2; } while (x.measureText(text).width > maxW && s > 10); return s + 2; }
 
   /* ---------- foreground: tricolour, title, messages, hashtag ---------- */
@@ -226,18 +228,18 @@
     /* kicker */
     x.font = '800 40px Archivo, Arial, sans-serif'; x.fillStyle = C.yellow; x.textAlign = 'center'; x.textBaseline = 'alphabetic';
     if ('letterSpacing' in x) x.letterSpacing = '10px';
-    x.fillText('I STAND WITH', 540, 168);
+    cfill(x, 'I STAND WITH', 540, 168);
     if ('letterSpacing' in x) x.letterSpacing = '0px';
     /* title, distressed */
     const t = layer(W, 420), tx = t.getContext('2d'); tx.textAlign = 'center'; tx.textBaseline = 'alphabetic';
     const s1 = fitFont(tx, 'JANTAR MANTAR', 'Anton, Impact, sans-serif', '', 900, 168);
-    tx.font = `${s1}px Anton, Impact, sans-serif`; tx.fillStyle = C.white; tx.fillText('JANTAR MANTAR', 540, s1 * .95);
+    tx.font = `${s1}px Anton, Impact, sans-serif`; tx.fillStyle = C.white; cfill(tx, 'JANTAR MANTAR', 540, s1 * .95);
     distress(t, 11, 2600);
     x.save(); x.shadowColor = 'rgba(0,0,0,.75)'; x.shadowBlur = 24; x.shadowOffsetY = 8; x.drawImage(t, 0, 176); x.restore();
     /* "2.0" on a red brush block */
     const b = layer(W, 300), bx = b.getContext('2d'); bx.textAlign = 'center';
     bx.fillStyle = C.red; bx.beginPath(); bx.moveTo(392, 30); bx.lineTo(694, 18); bx.lineTo(689, 178); bx.lineTo(386, 190); bx.closePath(); bx.fill();
-    bx.font = '150px Anton, Impact, sans-serif'; bx.fillStyle = C.white; bx.fillText('2.0', 540, 167);
+    bx.font = '150px Anton, Impact, sans-serif'; bx.fillStyle = C.white; cfill(bx, '2.0', 540, 167);
     distress(b, 5, 1400);
     x.save(); x.translate(540, 0); x.rotate(-.025); x.translate(-540, 0); x.shadowColor = 'rgba(0,0,0,.6)'; x.shadowBlur = 20; x.drawImage(b, 0, 176 + s1 * .98 - 22); x.restore();
     /* Malayalam banner */
@@ -247,12 +249,12 @@
     const mw = x.measureText(ML).width;
     x.fillStyle = 'rgba(8,4,4,.92)'; x.fillRect(-mw / 2 - 40, -ms * 1.05, mw + 80, ms * 1.6);
     x.fillStyle = C.yellow; x.fillRect(-mw / 2 - 40, -ms * 1.05, 10, ms * 1.6);
-    x.fillStyle = C.yellow; x.textAlign = 'center'; x.fillText(ML, 0, ms * .3);
+    x.fillStyle = C.yellow; cfill(x, ML, 0, ms * .3);
     x.restore();
     /* hashtag + link */
     x.textAlign = 'center'; x.font = '84px Anton, Impact, sans-serif';
-    x.save(); x.shadowColor = 'rgba(0,0,0,.8)'; x.shadowBlur = 18; x.fillStyle = C.yellow; x.fillText(TAG, 540, 1818); x.restore();
-    x.font = '600 28px Archivo, Arial, sans-serif'; x.fillStyle = 'rgba(255,255,255,.78)'; x.fillText(URL_TXT, 540, 1870);
+    x.save(); x.shadowColor = 'rgba(0,0,0,.8)'; x.shadowBlur = 18; x.fillStyle = C.yellow; cfill(x, TAG, 540, 1818); x.restore();
+    x.font = '600 28px Archivo, Arial, sans-serif'; x.fillStyle = 'rgba(255,255,255,.78)'; cfill(x, URL_TXT, 540, 1870);
     return c;
   }
 
@@ -270,7 +272,7 @@
     x.font = `800 ${size}px ${fam}`;
     const lh = size * 1.22, w = Math.max(...lines.map(l => x.measureText(l).width)), h = lh * lines.length + size * .35;
     x.fillStyle = C.red; x.fillRect(-w / 2 - 26, -size * .95, w + 52, h);
-    x.fillStyle = C.white; lines.forEach((l, i) => x.fillText(l, 0, size * .2 + i * lh));
+    x.fillStyle = C.white; lines.forEach((l, i) => cfill(x, l, 0, size * .2 + i * lh));
     x.restore();
   }
 
@@ -317,7 +319,7 @@
       ctx.strokeStyle = 'rgba(255,210,63,.55)'; ctx.setLineDash([22, 16]); ctx.lineWidth = 5; ctx.strokeRect(F.x + 30, F.y + 30, F.w - 60, F.h - 60); ctx.setLineDash([]);
       ctx.fillStyle = 'rgba(255,255,255,.22)'; ctx.beginPath(); ctx.arc(540, F.y + 290, 110, 0, Math.PI * 2); ctx.fill();
       ctx.beginPath(); ctx.ellipse(540, F.y + 640, 220, 190, 0, Math.PI, 0); ctx.fill();
-      ctx.fillStyle = 'rgba(255,255,255,.85)'; ctx.font = '800 46px Archivo, Arial, sans-serif'; ctx.textAlign = 'center'; ctx.fillText(st.placeholder || 'YOUR PHOTO HERE', 540, F.y + F.h - 64);
+      ctx.fillStyle = 'rgba(255,255,255,.85)'; ctx.font = '800 46px Archivo, Arial, sans-serif'; cfill(ctx, st.placeholder || 'YOUR PHOTO HERE', 540, F.y + F.h - 64);
     }
     ctx.restore();
     /* tape corners */
