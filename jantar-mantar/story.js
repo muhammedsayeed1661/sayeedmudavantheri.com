@@ -274,12 +274,27 @@
     x.restore();
   }
 
+  /* ---------- photographic background (used when a real photo is supplied) ---------- */
+  let PHOTO = null, PFOC = { x: .5, y: .45 };
+  function buildPhotoBackground(img) {
+    const c = layer(), x = c.getContext('2d'), r = rng(9), iw = img.naturalWidth || img.width, ih = img.naturalHeight || img.height;
+    const s = Math.max(W / iw, H / ih), dw = iw * s, dh = ih * s;
+    x.drawImage(img, (W - dw) * PFOC.x, (H - dh) * PFOC.y, dw, dh);
+    /* light touch: the supplied artwork is already graded. Just help the title and messages read. */
+    let g = x.createLinearGradient(0, 0, 0, 560); g.addColorStop(0, 'rgba(8,3,4,.72)'); g.addColorStop(1, 'rgba(8,3,4,0)'); x.fillStyle = g; x.fillRect(0, 0, W, 560);
+    g = x.createLinearGradient(0, 1380, 0, H); g.addColorStop(0, 'rgba(8,3,4,0)'); g.addColorStop(.5, 'rgba(8,3,4,.45)'); g.addColorStop(1, 'rgba(6,2,3,.7)'); x.fillStyle = g; x.fillRect(0, 1380, W, H - 1380);
+    g = x.createRadialGradient(W / 2, H * .45, H * .35, W / 2, H * .5, H * .85); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,.4)');
+    x.fillStyle = g; x.fillRect(0, 0, W, H);
+    return c;
+  }
+  function setPhotoBackground(img, focus) { PHOTO = img; if (focus) PFOC = focus; BG = null; }
+
   let BG = null, FG = null, GR = null;
-  function prepare() { BG = buildBackground(); FG = buildForeground(); GR = buildGrain(); }
+  function prepare() { BG = PHOTO ? buildPhotoBackground(PHOTO) : buildBackground(); FG = buildForeground(); GR = buildGrain(); }
 
   /* ---------- compose one story ---------- */
   function render(ctx, st) {
-    if (!BG) prepare();
+    if (!BG || !FG) prepare();
     const F = FRAME;
     ctx.save(); ctx.clearRect(0, 0, W, H); ctx.drawImage(BG, 0, 0);
     /* frame shadow + white print border + tricolour edge */
@@ -325,5 +340,5 @@
     ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1; ctx.restore();
   }
 
-  global.JMStory = { W, H, FRAME, render, prepare, ML, EN, TAG };
+  global.JMStory = { W, H, FRAME, render, prepare, setPhotoBackground, ML, EN, TAG };
 })(window);

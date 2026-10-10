@@ -13,15 +13,15 @@
 <meta property="og:title" content="Jantar Mantar 2.0 · Make your support story">
 <meta property="og:description" content="ഞാനും ഈ പ്രതിഷേധത്തിനൊപ്പം. Add your photo and get a ready-to-share Instagram Story.">
 <meta property="og:url" content="https://sayeedmudavantheri.com/jantar-mantar/">
-<meta property="og:image" content="https://sayeedmudavantheri.com/jantar-mantar/og.jpg?v=3">
-<meta property="og:image:secure_url" content="https://sayeedmudavantheri.com/jantar-mantar/og.jpg?v=3">
+<meta property="og:image" content="https://sayeedmudavantheri.com/jantar-mantar/og.jpg?v=4">
+<meta property="og:image:secure_url" content="https://sayeedmudavantheri.com/jantar-mantar/og.jpg?v=4">
 <meta property="og:image:type" content="image/jpeg">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Jantar Mantar 2.0 Instagram Story template with India Gate at sunset and a photo frame">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Jantar Mantar 2.0 · Make your support story">
 <meta name="twitter:description" content="ഞാനും ഈ പ്രതിഷേധത്തിനൊപ്പം. Add your photo and get a ready-to-share Instagram Story.">
-<meta name="twitter:image" content="https://sayeedmudavantheri.com/jantar-mantar/og.jpg?v=3">
+<meta name="twitter:image" content="https://sayeedmudavantheri.com/jantar-mantar/og.jpg?v=4">
 <meta name="twitter:image:alt" content="Jantar Mantar 2.0 Instagram Story template">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="preload" href="fonts/anton.woff2" as="font" type="font/woff2" crossorigin>
@@ -332,7 +332,10 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px}
     document.fonts.load('80px Anton'), document.fonts.load('800 40px Archivo'), document.fonts.load('600 20px Archivo'),
     document.fonts.load('800 40px "Noto Sans Malayalam"', 'ഞാനും')
   ];
-  Promise.race([Promise.all(fontLoads), new Promise(r => setTimeout(r, 4000))]).then(() => {
+  /* photographic background (bg.jpg next to this page); falls back to the drawn scene if missing */
+  const bgLoad = new Promise(res => { const im = new Image(); im.onload = () => res(im); im.onerror = () => res(null); im.src = 'bg.jpg?v=1'; });
+  Promise.race([Promise.all([...fontLoads, bgLoad]), new Promise(r => setTimeout(r, 6000))]).then(async () => {
+    const bg = await Promise.race([bgLoad, new Promise(r => setTimeout(() => r(null), 10))]); if (bg) JMStory.setPhotoBackground(bg);
     JMStory.prepare(); ready = true; draw();
     const sm = $('sample'); if (sm) { const t = document.createElement('canvas'); t.width = 1080; t.height = 1920;
       JMStory.render(t.getContext('2d'), { placeholder: 'YOUR PHOTO HERE' }); sm.getContext('2d').drawImage(t, 0, 0, 540, 960); }
