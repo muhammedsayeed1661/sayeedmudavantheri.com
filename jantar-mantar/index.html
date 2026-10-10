@@ -13,15 +13,15 @@
 <meta property="og:title" content="Jantar Mantar 2.0 · Make your support story">
 <meta property="og:description" content="ഞാനും ഈ പ്രതിഷേധത്തിനൊപ്പം. Add your photo and get a ready-to-share Instagram Story.">
 <meta property="og:url" content="https://sayeedmudavantheri.com/jantar-mantar/">
-<meta property="og:image" content="https://sayeedmudavantheri.com/jantar-mantar/og.jpg?v=2">
-<meta property="og:image:secure_url" content="https://sayeedmudavantheri.com/jantar-mantar/og.jpg?v=2">
+<meta property="og:image" content="https://sayeedmudavantheri.com/jantar-mantar/og.jpg?v=3">
+<meta property="og:image:secure_url" content="https://sayeedmudavantheri.com/jantar-mantar/og.jpg?v=3">
 <meta property="og:image:type" content="image/jpeg">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Jantar Mantar 2.0 Instagram Story template with India Gate at sunset and a photo frame">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Jantar Mantar 2.0 · Make your support story">
 <meta name="twitter:description" content="ഞാനും ഈ പ്രതിഷേധത്തിനൊപ്പം. Add your photo and get a ready-to-share Instagram Story.">
-<meta name="twitter:image" content="https://sayeedmudavantheri.com/jantar-mantar/og.jpg?v=2">
+<meta name="twitter:image" content="https://sayeedmudavantheri.com/jantar-mantar/og.jpg?v=3">
 <meta name="twitter:image:alt" content="Jantar Mantar 2.0 Instagram Story template">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="preload" href="fonts/anton.woff2" as="font" type="font/woff2" crossorigin>
@@ -115,6 +115,19 @@ h1 b{display:inline-block;font-weight:400;background:var(--red);color:#fff;paddi
 .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .actions .btn{width:100%}
 .actions .full{grid-column:1/-1}
+.actions .btn[hidden]{display:none}
+.actions.solo #dl{grid-column:1/-1}
+.live{margin-top:26px;display:inline-flex;flex-direction:column;gap:8px;padding:16px 20px 14px;border-radius:16px;background:linear-gradient(180deg,rgba(227,25,28,.14),rgba(227,25,28,.04));border:1px solid rgba(227,25,28,.35)}
+.live-top{display:flex;align-items:center;gap:8px;font:800 12px/1 Archivo,sans-serif;letter-spacing:.18em;color:#ffb3b3}
+.live .dot{width:9px;height:9px;border-radius:50%;background:#ff3b3b;box-shadow:0 0 0 0 rgba(255,59,59,.7);animation:pulse 1.6s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,59,59,.7)}70%{box-shadow:0 0 0 10px rgba(255,59,59,0)}100%{box-shadow:0 0 0 0 rgba(255,59,59,0)}}
+.odo{display:flex;align-items:flex-end;gap:4px;font:400 clamp(40px,6vw,58px)/1 Anton,Impact,sans-serif;color:#fff}
+.odo .d{position:relative;width:.62em;height:1.12em;overflow:hidden;border-radius:6px;background:linear-gradient(180deg,#2a1214 0 49%,#1d0c0d 51% 100%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08),0 6px 14px -8px #000}
+.odo .d::after{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:rgba(0,0,0,.6)}
+.odo .col{position:absolute;left:0;right:0;top:0;transition:transform .9s cubic-bezier(.2,.8,.2,1)}
+.odo .col span{display:block;height:1.12em;line-height:1.12em;text-align:center}
+.odo .sep{width:.22em;text-align:center;color:var(--yellow)}
+.live-cap{color:var(--mute);font-size:14px}
 .invite{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
 .inv-h{margin:0 0 10px;font-weight:600;font-size:14px}
 .inv-row{display:flex;flex-wrap:wrap;gap:8px}
@@ -180,6 +193,11 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px}
         <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>No sign-up</span>
         <span><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2"/></svg>1080 × 1920 story</span>
       </div>
+      <div class="live" id="live" hidden>
+        <div class="live-top"><span class="dot" aria-hidden="true"></span>LIVE SUPPORT COUNT</div>
+        <div class="odo" id="odo" role="status" aria-live="polite" aria-label="Supporters so far"></div>
+        <div class="live-cap">people have made their support story</div>
+      </div>
     </div>
     <div class="sample" aria-hidden="true"><canvas id="sample" width="540" height="960"></canvas></div>
   </section>
@@ -231,11 +249,12 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px}
         <div class="step">
           <h3><em>3</em>Download and share</h3>
           <div class="actions">
+            <button class="btn yellow" type="button" id="share" disabled hidden><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8l7.6-4.4M8.2 13.2l7.6 4.4"/></svg>Share story</button>
             <button class="btn red" type="button" id="dl" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v12M7 11l5 5 5-5"/><path d="M4 20h16"/></svg>Download PNG</button>
-            <button class="btn yellow" type="button" id="share" disabled hidden><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8l7.6-4.4M8.2 13.2l7.6 4.4"/></svg>Share</button>
             <button class="btn ghost full" type="button" id="again" hidden>Start again with another photo</button>
           </div>
           <p class="status" id="status" role="status" aria-live="polite"></p>
+          <p class="small" id="nextNo" hidden></p>
           <p class="small">On Instagram: open Stories, pick the saved image from your gallery, and post.</p>
           <div class="invite" aria-labelledby="inv">
             <p id="inv" class="inv-h">Invite friends to make theirs</p>
@@ -269,7 +288,7 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px}
   <h2 id="pv">Your privacy</h2>
   <div class="cards">
     <div><b>Your photo stays with you</b><p>The story is made inside your browser. Your photo is never uploaded or stored on any server.</p></div>
-    <div><b>No account, no tracking</b><p>No sign-up and no personal data collected. Your name and message are only drawn onto your own image.</p></div>
+    <div><b>No account, no tracking</b><p>No sign-up and no personal data collected. Your name and message are only drawn onto your own image. The live count only adds +1 (once per device) when you save or share a story; no photo, name or message is sent.</p></div>
     <div><b>You decide</b><p>Nothing is posted for you. You choose whether to download or share your story.</p></div>
   </div>
   <p class="disclaimer"><b>Independent initiative.</b> This page is a voluntary, independent digital initiative by Muhammed Sayeed Mudavantheri for civic expression. It is not an official page of the protest organisers, any political party or any government body. Taking part is entirely voluntary.</p>
@@ -406,17 +425,53 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px}
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = fname(); document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 4000);
     status('Saved. Now post it to your Instagram Story.');
+    countSupport();
   });
   /* device share (phones and some desktops) */
   const testFile = new File([new Blob([''], { type: 'image/png' })], 'x.png', { type: 'image/png' });
-  if (navigator.canShare && navigator.canShare({ files: [testFile] })) $('share').hidden = false;
+  if (navigator.canShare && navigator.canShare({ files: [testFile] })) $('share').hidden = false; else document.querySelector('.actions').classList.add('solo');
   $('share').addEventListener('click', async () => {
     if (!S.img) return; status('Opening share options…');
     const blob = await makeBlob(); const file = new File([blob], fname(), { type: 'image/png' });
-    try { await navigator.share({ files: [file], title: 'Jantar Mantar 2.0', text: SHARE_TEXT + ' ' + PAGE }); status('Shared.'); }
+    try { await navigator.share({ files: [file], title: 'Jantar Mantar 2.0', text: SHARE_TEXT + ' ' + PAGE }); status('Shared.'); countSupport(); }
     catch (e) { status(e && e.name === 'AbortError' ? '' : 'Sharing is not available here. Use Download instead.'); }
   });
   $('again').addEventListener('click', () => { $('file').value = ''; $('file').click(); });
+
+  /* ---------- live supporter count (anonymous counter, +1 once per device) ---------- */
+  const CNT = 'https://abacus.jasoncameron.dev', NS = 'sayeedmudavantheri-com', KEY = 'jm2-supporters';
+  const odo = $('odo'); let shown = -1;
+  function setCount(n) {
+    if (typeof n !== 'number' || n < 0 || n === shown) return; shown = n; $('live').hidden = false;
+    const str = n.toLocaleString('en-IN'), shape = str.replace(/\d/g, '0');
+    if (odo.dataset.len !== shape) {               /* rebuild only when the shape changes (more digits / commas) */
+      odo.innerHTML = ''; odo.dataset.len = shape;
+      for (const ch of str) { if (/\d/.test(ch)) { const d = document.createElement('span'); d.className = 'd'; const col = document.createElement('span'); col.className = 'col';
+          for (let i = 0; i < 10; i++) { const sp = document.createElement('span'); sp.textContent = i; col.appendChild(sp); } d.appendChild(col); odo.appendChild(d); }
+        else { const sp = document.createElement('span'); sp.className = 'sep'; sp.textContent = ch; odo.appendChild(sp); } }
+    }
+    const cols = odo.querySelectorAll('.col'); let k = 0;
+    requestAnimationFrame(() => { for (const ch of str) if (/\d/.test(ch)) { cols[k++].style.transform = `translateY(${-ch * 10}%)`; } });
+    odo.setAttribute('aria-label', `${str} supporters so far`);
+    const nx = $('nextNo'); if (!counted()) { nx.hidden = false; nx.textContent = `Your story will make you supporter #${(n + 1).toLocaleString('en-IN')}.`; }
+  }
+  const counted = () => { try { return localStorage.getItem('jm2-counted') === '1'; } catch (e) { return false; } };
+  async function countSupport() {
+    if (counted()) return;
+    try { localStorage.setItem('jm2-counted', '1'); } catch (e) {}
+    try { const r = await fetch(`${CNT}/hit/${NS}/${KEY}`); const j = await r.json(); setCount(j.value);
+      $('nextNo').hidden = false; $('nextNo').textContent = `Thank you! You are supporter #${j.value.toLocaleString('en-IN')}.`; } catch (e) {}
+  }
+  async function readCount() { try { const r = await fetch(`${CNT}/get/${NS}/${KEY}`, { cache: 'no-store' }); if (r.ok) setCount((await r.json()).value); } catch (e) {} }
+  readCount();
+  let poll = 0;
+  if ('EventSource' in window) {
+    try { const es = new EventSource(`${CNT}/stream/${NS}/${KEY}`);
+      es.onmessage = e => { try { setCount(JSON.parse(e.data).value); } catch (_) {} };
+      es.onerror = () => { es.close(); if (!poll) poll = setInterval(readCount, 20000); };
+    } catch (e) { poll = setInterval(readCount, 20000); }
+  } else poll = setInterval(readCount, 20000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) readCount(); });
 
   /* ---------- share the page link (preview shows the story thumbnail) ---------- */
   const enc = encodeURIComponent;

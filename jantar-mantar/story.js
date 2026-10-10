@@ -35,6 +35,77 @@
     return p;
   }
 
+
+  /* ---------- creative layers: clouds, chakra sun, tricolour smoke, lamps, birds, halftone ---------- */
+  function valueNoise(seed) {
+    const r = rng(seed), N = 256, P = new Float32Array(N * N); for (let i = 0; i < P.length; i++) P[i] = r();
+    const at = (i, j) => P[((j & 255) * N) + (i & 255)], sm = t => t * t * (3 - 2 * t);
+    return (x, y) => { const i = Math.floor(x), j = Math.floor(y), fx = sm(x - i), fy = sm(y - j);
+      const a = at(i, j), b = at(i + 1, j), c = at(i, j + 1), d = at(i + 1, j + 1); return a + (b - a) * fx + (c - a) * fy + (a - b - c + d) * fx * fy; };
+  }
+  function clouds(x, SX, SY) {
+    const w = 270, h = 480, c = layer(w, h), cx = c.getContext('2d'), id = cx.createImageData(w, h), d = id.data, n = valueNoise(21);
+    for (let py = 0; py < h; py++) for (let px = 0; px < w; px++) {
+      const X = px / w * 5, Y = py / h * 22;
+      let f = 0, amp = .55, fr = 1; for (let o = 0; o < 5; o++) { f += amp * n(X * fr * 1.0 + o * 7.1, Y * fr * .5 + o * 3.3); amp *= .5; fr *= 2.05; }
+      const yy = py / h, band = Math.max(0, 1 - Math.abs(yy - .3) / .26);           /* clouds live in the upper-middle sky */
+      const a = Math.max(0, Math.min(1, (f - .48) / .22)) * band;
+      const dx = (px / w * W - SX) / W, dy = (py / h * H - SY) / H, near = Math.max(0, 1 - Math.hypot(dx, dy * 1.4) * 2.2);
+      const lit = Math.min(1, .25 + near * 1.1 + (f - .5));
+      const i = (py * w + px) * 4;
+      d[i] = 60 + 195 * lit; d[i + 1] = 14 + 110 * lit * lit; d[i + 2] = 24 + 60 * lit * lit * lit; d[i + 3] = a * 230;
+    }
+    cx.putImageData(id, 0, 0);
+    x.save(); x.imageSmoothingQuality = 'high'; x.globalAlpha = .9; x.drawImage(c, 0, 0, W, H); x.restore();
+  }
+  function chakra(x, cx, cy, R) {
+    x.save(); x.globalCompositeOperation = 'screen'; x.strokeStyle = 'rgba(255,236,190,.55)'; x.fillStyle = 'rgba(255,236,190,.55)';
+    x.shadowColor = 'rgba(255,200,120,.9)'; x.shadowBlur = 26; x.lineWidth = R * .045;
+    x.beginPath(); x.arc(cx, cy, R, 0, Math.PI * 2); x.stroke();
+    x.lineWidth = R * .018;
+    for (let i = 0; i < 24; i++) { const a = i / 24 * Math.PI * 2; x.beginPath(); x.moveTo(cx + Math.cos(a) * R * .16, cy + Math.sin(a) * R * .16); x.lineTo(cx + Math.cos(a) * R * .95, cy + Math.sin(a) * R * .95); x.stroke();
+      const b = a + Math.PI / 24; x.beginPath(); x.arc(cx + Math.cos(b) * R * .93, cy + Math.sin(b) * R * .93, R * .025, 0, Math.PI * 2); x.fill(); }
+    x.beginPath(); x.arc(cx, cy, R * .14, 0, Math.PI * 2); x.fill();
+    x.restore();
+  }
+  function smoke(x, r, x0, y0, dir, rgb, len, spread) {
+    x.save(); x.globalCompositeOperation = 'screen';
+    const ph = r() * 6;
+    for (let k = 0; k < 140; k++) { const t = k / 140, jit = (r() - .5) * 60 * (1 + t * 2);
+      const px = x0 + dir * (t * spread + Math.sin(t * 5 + ph) * 70 * t) + jit, py = y0 - t * len + (r() - .5) * 40, rad = 50 + t * 230 + r() * 60;
+      const a = (.07 + .06 * (1 - t)) * (t < .08 ? t / .08 : 1);
+      const g = x.createRadialGradient(px, py, 0, px, py, rad); g.addColorStop(0, `rgba(${rgb},${a})`); g.addColorStop(1, `rgba(${rgb},0)`);
+      x.fillStyle = g; x.beginPath(); x.arc(px, py, rad, 0, Math.PI * 2); x.fill(); }
+    /* bright flare at the source */
+    const fg = x.createRadialGradient(x0, y0, 0, x0, y0, 90); fg.addColorStop(0, `rgba(255,255,230,.9)`); fg.addColorStop(.3, `rgba(${rgb},.6)`); fg.addColorStop(1, `rgba(${rgb},0)`);
+    x.fillStyle = fg; x.beginPath(); x.arc(x0, y0, 90, 0, Math.PI * 2); x.fill();
+    x.restore();
+  }
+  function lamp(x, bx, by, h, s) {
+    x.save(); x.fillStyle = '#0b0405';
+    x.fillRect(bx - 34 * s, by - 60 * s, 68 * s, 60 * s); x.fillRect(bx - 24 * s, by - 90 * s, 48 * s, 30 * s);
+    x.beginPath(); x.moveTo(bx - 14 * s, by - 90 * s); x.lineTo(bx - 7 * s, by - h); x.lineTo(bx + 7 * s, by - h); x.lineTo(bx + 14 * s, by - 90 * s); x.fill();
+    x.fillRect(bx - 70 * s, by - h, 140 * s, 8 * s);
+    [-62, -22, 22, 62].forEach((dx, i) => { const lx = bx + dx * s, ly = by - h - (i % 3 === 0 ? 30 : 58) * s;
+      x.fillRect(lx - 3 * s, ly, 6 * s, (by - h) - ly);
+      const g = x.createRadialGradient(lx, ly - 18 * s, 0, lx, ly - 18 * s, 70 * s); g.addColorStop(0, 'rgba(255,220,150,.75)'); g.addColorStop(1, 'rgba(255,160,80,0)');
+      x.fillStyle = g; x.beginPath(); x.arc(lx, ly - 18 * s, 70 * s, 0, Math.PI * 2); x.fill();
+      x.fillStyle = '#ffe2a8'; x.beginPath(); x.ellipse(lx, ly - 18 * s, 13 * s, 18 * s, 0, 0, Math.PI * 2); x.fill(); x.fillStyle = '#0b0405'; });
+    x.restore();
+  }
+  function birds(x, r, cx, cy, n, spread) {
+    x.save(); x.strokeStyle = 'rgba(20,6,8,.85)'; x.lineCap = 'round';
+    for (let i = 0; i < n; i++) { const bx = cx + (r() - .5) * spread, by = cy + (r() - .5) * spread * .45, s = 7 + r() * 9, f = .4 + r() * .5;
+      x.lineWidth = 2 + s * .18; x.beginPath(); x.moveTo(bx - s, by - s * f); x.quadraticCurveTo(bx - s * .4, by - s * .2, bx, by); x.quadraticCurveTo(bx + s * .4, by - s * .2, bx + s, by - s * f); x.stroke(); }
+    x.restore();
+  }
+  function halftone(x) {
+    x.save(); x.globalCompositeOperation = 'multiply';
+    for (let y = 0; y < 760; y += 16) { const k = 1 - y / 760; for (let xx = (y / 16 % 2) * 8; xx < W; xx += 16) {
+      x.fillStyle = `rgba(30,0,0,${.35 * k})`; x.beginPath(); x.arc(xx, y, 1 + 3.2 * k, 0, Math.PI * 2); x.fill(); } }
+    x.restore();
+  }
+
   /* ---------- background: sunset sky, sun, rays, India Gate, haze, crowd ---------- */
   function buildBackground() {
     const c = layer(), x = c.getContext('2d'), r = rng(7);
@@ -42,18 +113,25 @@
     sky.addColorStop(0, '#120406'); sky.addColorStop(.22, '#3b0a0e'); sky.addColorStop(.42, '#8e1a12');
     sky.addColorStop(.55, '#e2531a'); sky.addColorStop(.63, '#ff9a3c'); sky.addColorStop(.70, '#6d1a10'); sky.addColorStop(1, '#0b0405');
     x.fillStyle = sky; x.fillRect(0, 0, W, H);
-    const SX = 540, SY = 600;
+    const SX = 540, SY = 560;
+    clouds(x, SX, SY);
     /* sun glow + disc */
     let g = x.createRadialGradient(SX, SY, 0, SX, SY, 900);
     g.addColorStop(0, 'rgba(255,214,120,.95)'); g.addColorStop(.12, 'rgba(255,170,70,.75)'); g.addColorStop(.35, 'rgba(240,90,30,.35)'); g.addColorStop(1, 'rgba(120,20,10,0)');
     x.fillStyle = g; x.fillRect(0, 0, W, H);
-    x.fillStyle = '#ffd690'; x.globalAlpha = .9; x.beginPath(); x.arc(SX, SY, 120, 0, Math.PI * 2); x.fill(); x.globalAlpha = 1;
+    x.fillStyle = '#ffd690'; x.globalAlpha = .9; x.beginPath(); x.arc(SX, SY, 110, 0, Math.PI * 2); x.fill(); x.globalAlpha = 1;
+    chakra(x, SX, SY, 300);
     /* light rays */
     x.save(); x.globalCompositeOperation = 'lighter';
     for (let i = 0; i < 26; i++) { const a = -Math.PI + (i / 26) * Math.PI + r() * .06, wd = .018 + r() * .03, len = 1500;
       const rg = x.createRadialGradient(SX, SY, 80, SX, SY, len); rg.addColorStop(0, 'rgba(255,200,120,.16)'); rg.addColorStop(1, 'rgba(255,120,60,0)');
       x.fillStyle = rg; x.beginPath(); x.moveTo(SX, SY); x.arc(SX, SY, len, a - wd, a + wd); x.closePath(); x.fill(); }
     x.restore();
+    /* tricolour smoke flares rising behind the gate */
+    smoke(x, r, 70, 1420, 1, '255,140,40', 1050, 300);
+    smoke(x, r, 1010, 1420, -1, '40,170,70', 1050, 300);
+    smoke(x, r, 540, 1500, 0, '255,245,235', 700, 0);
+    birds(x, r, 850, 520, 9, 260); birds(x, r, 210, 600, 6, 200);
     /* drifting smoke bands */
     for (let i = 0; i < 18; i++) { const cx = r() * W, cy = 900 + r() * 700, rw = 220 + r() * 380, rh = 50 + r() * 90;
       const sg = x.createRadialGradient(cx, cy, 0, cx, cy, rw); sg.addColorStop(0, `rgba(${40 + r() * 40|0},10,8,${.25 + r() * .25})`); sg.addColorStop(1, 'rgba(20,5,5,0)');
@@ -73,10 +151,12 @@
     /* ground haze */
     g = x.createLinearGradient(0, 1380, 0, 1640); g.addColorStop(0, 'rgba(60,12,8,0)'); g.addColorStop(1, 'rgba(25,6,6,.95)');
     x.fillStyle = g; x.fillRect(0, 1380, W, 260);
+    lamp(x, 70, 1760, 700, 1.05); lamp(x, 1010, 1760, 700, 1.05);
     drawCrowd(x, r);
     /* vignette */
     g = x.createRadialGradient(W / 2, H * .45, H * .25, W / 2, H * .5, H * .78); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,.72)');
     x.fillStyle = g; x.fillRect(0, 0, W, H);
+    halftone(x);
     return c;
   }
 
