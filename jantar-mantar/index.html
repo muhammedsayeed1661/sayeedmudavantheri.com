@@ -8,12 +8,21 @@
 <link rel="canonical" href="https://sayeedmudavantheri.com/jantar-mantar/">
 <meta name="theme-color" content="#0b0708">
 <meta property="og:type" content="website">
+<meta property="og:site_name" content="Muhammed Sayeed">
+<meta property="og:locale" content="en_IN">
 <meta property="og:title" content="Jantar Mantar 2.0 · Make your support story">
 <meta property="og:description" content="ഞാനും ഈ പ്രതിഷേധത്തിനൊപ്പം. Add your photo and get a ready-to-share Instagram Story.">
 <meta property="og:url" content="https://sayeedmudavantheri.com/jantar-mantar/">
-<meta property="og:image" content="https://sayeedmudavantheri.com/jantar-mantar/og.jpg">
+<meta property="og:image" content="https://sayeedmudavantheri.com/jantar-mantar/og.jpg?v=2">
+<meta property="og:image:secure_url" content="https://sayeedmudavantheri.com/jantar-mantar/og.jpg?v=2">
+<meta property="og:image:type" content="image/jpeg">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Jantar Mantar 2.0 Instagram Story template with India Gate at sunset and a photo frame">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Jantar Mantar 2.0 · Make your support story">
+<meta name="twitter:description" content="ഞാനും ഈ പ്രതിഷേധത്തിനൊപ്പം. Add your photo and get a ready-to-share Instagram Story.">
+<meta name="twitter:image" content="https://sayeedmudavantheri.com/jantar-mantar/og.jpg?v=2">
+<meta name="twitter:image:alt" content="Jantar Mantar 2.0 Instagram Story template">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="preload" href="fonts/anton.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/noto-malayalam-800.woff2" as="font" type="font/woff2" crossorigin>
@@ -106,6 +115,12 @@ h1 b{display:inline-block;font-weight:400;background:var(--red);color:#fff;paddi
 .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .actions .btn{width:100%}
 .actions .full{grid-column:1/-1}
+.invite{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.inv-h{margin:0 0 10px;font-weight:600;font-size:14px}
+.inv-row{display:flex;flex-wrap:wrap;gap:8px}
+.sbtn{appearance:none;cursor:pointer;display:inline-flex;align-items:center;min-height:42px;padding:0 14px;border-radius:10px;border:1.5px solid var(--line);background:#0f0809;color:var(--fg);font:600 14px/1 Archivo,sans-serif;text-decoration:none}
+.sbtn:hover{border-color:var(--yellow);color:var(--yellow)}
+.sbtn.wa{border-color:rgba(37,211,102,.5)}
 .status{min-height:22px;margin:10px 0 0;font-size:14px;color:var(--yellow)}
 
 /* info */
@@ -158,7 +173,7 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px}
       <p class="lead">Show your support from anywhere. Add your photo, your name and a message, and get a ready-to-post Instagram Story in seconds.</p>
       <div class="cta">
         <a class="btn red" href="#maker"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h3l2-3h6l2 3h3v13H4z"/><circle cx="12" cy="13" r="4"/></svg>Create my story</a>
-        <a class="btn ghost" href="#privacy">How your photo is handled</a>
+        <button class="btn ghost" type="button" id="heroShare"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8l7.6-4.4M8.2 13.2l7.6 4.4"/></svg>Share this page</button>
       </div>
       <div class="trust">
         <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg>Photo stays on your device</span>
@@ -222,6 +237,17 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px}
           </div>
           <p class="status" id="status" role="status" aria-live="polite"></p>
           <p class="small">On Instagram: open Stories, pick the saved image from your gallery, and post.</p>
+          <div class="invite" aria-labelledby="inv">
+            <p id="inv" class="inv-h">Invite friends to make theirs</p>
+            <div class="inv-row">
+              <button class="sbtn" type="button" data-net="native" hidden>Share link</button>
+              <a class="sbtn wa" data-net="wa" target="_blank" rel="noopener">WhatsApp</a>
+              <a class="sbtn fb" data-net="fb" target="_blank" rel="noopener">Facebook</a>
+              <a class="sbtn x" data-net="x" target="_blank" rel="noopener">X</a>
+              <a class="sbtn tg" data-net="tg" target="_blank" rel="noopener">Telegram</a>
+              <button class="sbtn" type="button" data-net="copy">Copy link</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -278,6 +304,8 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px}
     b.addEventListener('click', () => pick(t, true)); chips.appendChild(b); });
   msg.addEventListener('input', () => { const v = msg.value; if (v.trim()) pick(v, false); else pick(PRESETS[0], true); });
   const F = JMStory.FRAME;
+  const PAGE = 'https://sayeedmudavantheri.com/jantar-mantar/';
+  const SHARE_TEXT = 'ഞാനും ഈ പ്രതിഷേധത്തിനൊപ്പം #JantarMantar2.';
   let ready = false, raf = 0;
 
   /* ---------- fonts, then first draw ---------- */
@@ -385,10 +413,32 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px}
   $('share').addEventListener('click', async () => {
     if (!S.img) return; status('Opening share options…');
     const blob = await makeBlob(); const file = new File([blob], fname(), { type: 'image/png' });
-    try { await navigator.share({ files: [file], title: 'Jantar Mantar 2.0', text: 'ഞാനും ഈ പ്രതിഷേധത്തിനൊപ്പം #JantarMantar2' }); status('Shared.'); }
+    try { await navigator.share({ files: [file], title: 'Jantar Mantar 2.0', text: SHARE_TEXT + ' ' + PAGE }); status('Shared.'); }
     catch (e) { status(e && e.name === 'AbortError' ? '' : 'Sharing is not available here. Use Download instead.'); }
   });
   $('again').addEventListener('click', () => { $('file').value = ''; $('file').click(); });
+
+  /* ---------- share the page link (preview shows the story thumbnail) ---------- */
+  const enc = encodeURIComponent;
+  document.querySelectorAll('[data-net]').forEach(el => {
+    const n = el.dataset.net, t = SHARE_TEXT + ' Make yours:';
+    if (n === 'wa') el.href = 'https://wa.me/?text=' + enc(t + ' ' + PAGE);
+    if (n === 'fb') el.href = 'https://www.facebook.com/sharer/sharer.php?u=' + enc(PAGE);
+    if (n === 'x') el.href = 'https://twitter.com/intent/tweet?text=' + enc(t) + '&url=' + enc(PAGE);
+    if (n === 'tg') el.href = 'https://t.me/share/url?url=' + enc(PAGE) + '&text=' + enc(t);
+    if (n === 'native' && navigator.share) el.hidden = false;
+  });
+  async function shareLink() {
+    if (navigator.share) { try { await navigator.share({ title: 'Jantar Mantar 2.0', text: SHARE_TEXT + ' Make yours:', url: PAGE }); return; } catch (e) { if (e && e.name === 'AbortError') return; } }
+    copyLink();
+  }
+  async function copyLink() {
+    try { await navigator.clipboard.writeText(PAGE); status('Link copied. Paste it anywhere to invite friends.'); }
+    catch (e) { prompt('Copy this link:', PAGE); }
+  }
+  document.querySelector('[data-net=native]').addEventListener('click', shareLink);
+  document.querySelector('[data-net=copy]').addEventListener('click', copyLink);
+  $('heroShare').addEventListener('click', shareLink);
 })();
 </script>
 </body>
